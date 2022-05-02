@@ -5,7 +5,7 @@ using UnityEngine;
 public class WebAvatarLoader : MonoBehaviour
 {
         [DllImport("__Internal")]
-        private static extern void HideFrame();
+        private static extern void HideReadyPlayerMeFrame();
     
         [SerializeField]
         private string AvatarURL = "https://d1a370nemizbjq.cloudfront.net/5cae00e5-5622-47c7-af0d-02028fad5beb.glb";
