@@ -42,15 +42,21 @@ function unityShowBanner(msg, type) {
 }
 
 var buildUrl = "Build";
-var loaderUrl = buildUrl + "/WebGL.loader.js";
+var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
 var config = {
-    dataUrl: buildUrl + "/WebGL.data.gz",
-    frameworkUrl: buildUrl + "/WebGL.framework.js.gz",
-    codeUrl: buildUrl + "/WebGL.wasm.gz",
+    dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+    frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+    codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+    #if MEMORY_FILENAME
+    memoryUrl: buildUrl + "/{{{ MEMORY_FILENAME }}}",
+    #endif
+    #if SYMBOLS_FILENAME
+    symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+    #endif
     streamingAssetsUrl: "StreamingAssets",
-    companyName: "DefaultCompany",
-    productName: "RPM_WebGL",
-    productVersion: "0.1",
+    companyName: "{{{ COMPANY_NAME }}}",
+    productName: "{{{ PRODUCT_NAME }}}",
+    productVersion: "{{{ PRODUCT_VERSION }}}",
     showBanner: unityShowBanner,
 };
 
@@ -68,9 +74,14 @@ if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
     config.devicePixelRatio = 1;
     unityShowBanner('WebGL builds are not supported on mobile devices.');
 } else {
-    canvas.style.width = "960px";
-    canvas.style.height = "600px";
+    canvas.style.width = "{{{ WIDTH }}}px";
+    canvas.style.height = "{{{ HEIGHT }}}px";
 }
+
+#if BACKGROUND_FILENAME
+canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
+#endif
+
 loadingBar.style.display = "block";
 
 var script = document.createElement("script");
