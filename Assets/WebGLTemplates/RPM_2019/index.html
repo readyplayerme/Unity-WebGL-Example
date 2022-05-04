@@ -11,7 +11,7 @@
   </head>
   <body>
       <div id="webgl-content" class="unity-desktop">
-        <div id="canvas-wrap">
+        <div id="canvas-wrap" style="width:%UNITY_WIDTH%px;height:%UNITY_HEIGHT%px;">
           <div id="rpm-container"  >
             <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
             <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
@@ -25,7 +25,9 @@
         <div class="title">%UNITY_WEB_NAME%</div>
       </div>
       </div>
-      <script src="TemplateData/main.js"></script>
-      <script>runSetup("%UNITY_WEBGL_LOADER_URL%","%UNITY_WEBGL_BUILD_URL%", "%UNITY_CUSTOM_RPM_SUBDOMAIN%")</script>
+      <script src="TemplateData/Global.js"></script>
+      <script src="TemplateData/UnitySetup.js"></script>
+      <script src="TemplateData/ReadyPlayerMeFrame.js"></script>
+      <script>setupUnity("%UNITY_WEBGL_LOADER_URL%","%UNITY_WEBGL_BUILD_URL%")</script>
   </body>
 </html>

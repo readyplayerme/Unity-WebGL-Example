@@ -1,31 +1,13 @@
-var rpmFrame = document.getElementById("rpm-frame");
-var rpmContainer = document.getElementById("rpm-container");
-var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-var warningBanner = document.querySelector("#unity-warning");
-var rpmHideButton = document.getElementById("rpm-hide-button");
-var canvasWrapper = document.getElementById("canvas-wrap");
-var unityGame;
+rpmHideButton.onclick = function () {
+    if (document.fullscreenElement) {
+        canvasWrapper.requestFullscreen();
+    }
+    rpmContainer.style.display = "none";
+};
 
-function runSetup(loaderUrl, buildUrl, subdomain){
 
-    var script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = () => {
-        unityGame = UnityLoader.instantiate("unity-container", buildUrl, {onProgress: UnityProgress});
-        setupRpmFrame(subdomain);
-    };
-    document.body.appendChild(script);
-}
-//
-// var script = document.createElement("script");
-// script.src = "Build/UnityLoader.js";
-// script.onload = () => {
-//     unityGame = UnityLoader.instantiate("unity-container", "%UNITY_WEBGL_BUILD_URL%", {onProgress: UnityProgress});
-//     setupRpmFrame();
-// };
-// document.body.appendChild(script);
 function setupRpmFrame(subdomain) {
-    rpmFrame.src = `https://${subdomain !== "" ? subdomain : "demo"}.readyplayer.me/avatar?frameApi`
+    rpmFrame.src = `https://${subdomain != "" ? subdomain : "demo"}.readyplayer.me/avatar?frameApi`;
 
     window.addEventListener("message", subscribe);
     document.addEventListener("message", subscribe);
@@ -82,14 +64,10 @@ function setupRpmFrame(subdomain) {
     }
 }
 
-function displayRpm() {
+function showRpm() {
     rpmContainer.style.display = "block";
 }
 
 function hideRpm() {
     rpmContainer.style.display = "none";
-}
-
-function showFullscreen(){
-    canvasWrapper.requestFullscreen();
 }
