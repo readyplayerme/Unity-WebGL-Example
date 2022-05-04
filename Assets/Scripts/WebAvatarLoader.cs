@@ -9,8 +9,7 @@ public class WebAvatarLoader : MonoBehaviour
     private void Start()
     {
         PartnerSO partner = Resources.Load<PartnerSO>("Partner");
-        string url = partner.GetUrl();
-        WebInterface.SetupRpmFrame(url);
+        WebInterface.SetupRpmFrame(partner.Subdomain);
         avatarLoader = new AvatarLoader();
     }
 
