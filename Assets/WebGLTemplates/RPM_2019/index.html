@@ -11,99 +11,21 @@
   </head>
   <body>
       <div id="webgl-content" class="unity-desktop">
-        <div id="canvas-wrap" style="width:%UNITY_WIDTH%px; height:%UNITY_HEIGHT%px!;">
+        <div id="canvas-wrap">
           <div id="rpm-container"  >
             <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
-            <button id="rpm-hide-button" onclick="getElementById('rpm-container').style.display = 'none'">Hide</button>
+            <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
           </div>
           <div id="unity-container"></div>
-          <div class="footer">
-            <div class="webgl-logo"></div>
-            <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
-            <div class="title">%UNITY_WEB_NAME%</div>
-          </div>
+          
         </div>
+        <div class="footer">
+          <div class="webgl-logo"></div>
+          <div class="fullscreen" onclick="showFullscreen()"></div>
+        <div class="title">%UNITY_WEB_NAME%</div>
       </div>
-  <script>
-    var rpmFrame = document.getElementById("rpm-frame");
-    var rpmContainer = document.getElementById("rpm-container");
-    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-    var warningBanner = document.querySelector("#unity-warning");
-    var rpmHideButton = document.getElementById("rpm-hide-button");
-    var canvasWrapper = document.getElementById("canvas-wrap");
-    var unityGame;
-
-    var script = document.createElement("script");
-    script.src = "Build/UnityLoader.js";
-    script.onload = () => {
-      unityGame = UnityLoader.instantiate("unity-container", "%UNITY_WEBGL_BUILD_URL%", {onProgress: UnityProgress});
-      setupRpmFrame();
-    };
-    document.body.appendChild(script);
-    
-    setupRpmFrame();
-    function setupRpmFrame() {
-      const subdomain = "%UNITY_CUSTOM_RPM_SUBDOMAIN%";
-      rpmFrame.src = `https://${subdomain !== "" ? subdomain : "demo"}.readyplayer.me/avatar?frameApi`
-
-      window.addEventListener("message", subscribe);
-      document.addEventListener("message", subscribe);
-      function subscribe(event) {
-        const json = parse(event);
-        if (
-                unityGame == null ||
-                json?.source !== "readyplayerme" ||
-                json?.eventName == null
-        ) {
-          return;
-        }
-        unityGame.SendMessage(
-                "DebugCanvas",
-                "LogMessage",
-                `Event: ${json.eventName}`
-        );
-
-        // Susbribe to all events sent from Ready Player Me once frame is ready
-        if (json.eventName === "v1.frame.ready") {
-          rpmFrame.contentWindow.postMessage(
-                  JSON.stringify({
-                    target: "readyplayerme",
-                    type: "subscribe",
-                    eventName: "v1.**",
-                  }),
-                  "*"
-          );
-        }
-
-        // Get avatar GLB URL
-        if (json.eventName === "v1.avatar.exported") {
-          rpmContainer.style.display = "none";
-          unityGame.SendMessage(
-                  "ReadyPlayerMeAvatar",
-                  "OnWebViewAvatarGenerated",
-                  json.data.url
-          );
-          console.log(`Avatar URL: ${json.data.url}`);
-        }
-
-        // Get user id
-        if (json.eventName === "v1.user.set") {
-          console.log(`User with id ${json.data.id} set: ${JSON.stringify(json)}`);
-        }
-      }
-
-      function parse(event) {
-        try {
-          return JSON.parse(event.data);
-        } catch (error) {
-          return null;
-        }
-      }
-
-      function displayIframe() {
-        document.getElementById("rpm-container").hidden = false;
-      }
-    }
-  </script>
+      </div>
+      <script src="TemplateData/main.js"></script>
+      <script>runSetup("%UNITY_WEBGL_LOADER_URL%","%UNITY_WEBGL_BUILD_URL%", "%UNITY_CUSTOM_RPM_SUBDOMAIN%")</script>
   </body>
 </html>
