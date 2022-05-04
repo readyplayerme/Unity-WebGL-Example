@@ -164,8 +164,12 @@ function setupRpmFrame() {
             return null;
         }
     }
+}
 
-    function displayIframe() {
-        document.getElementById("rpm-container").hidden = false;
-    }
+function displayRpm() {
+    rpmContainer.style.display = "block";
+}
+
+function hideRpm() {
+    rpmContainer.style.display = "none";
 }

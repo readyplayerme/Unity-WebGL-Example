@@ -80,10 +80,10 @@ function setupRpmFrame(subdomain) {
             return null;
         }
     }
+}
 
-    function displayIframe() {
-        rpmContainer.style.display = "block";
-    }
+function displayRpm() {
+    rpmContainer.style.display = "block";
 }
 
 function hideRpm() {
