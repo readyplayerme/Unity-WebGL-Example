@@ -20,13 +20,14 @@ function setupRpmFrame(subdomain) {
         ) {
             return;
         }
+        // Send web event names to Unity can be useful for debugging. Can safely be removed
         unityGame.SendMessage(
-            "DebugCanvas",
+            "DebugPanel",
             "LogMessage",
             `Event: ${json.eventName}`
         );
 
-        // Susbribe to all events sent from Ready Player Me once frame is ready
+        // Subscribe to all events sent from Ready Player Me once frame is ready
         if (json.eventName === "v1.frame.ready") {
             rpmFrame.contentWindow.postMessage(
                 JSON.stringify({
