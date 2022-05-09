@@ -31,3 +31,69 @@ From here select the RPMTemplate (or RPM_2019 if using Unity version 2019).
 Once that is done you can open up the Build Settings window again, make sure you have select WebGL as the target platform and click Build And Run.
 
 It will take some time to compile but once it is finished it should open up the WebGL application in your default browser.
+
+## How It Works
+
+### WebGL Templates
+
+To simplify things we will be looking at the RPM_Template as it is more relevant however the logic is very similar for the RPM_2019 template. 
+
+As with all WebGL templates there is an index.html which is based off the Default template that unity provides but with some extra wrappers (`canvas-wrap`) and an `<div id="rpm-container">`  that will hold our Ready Player me iFrame as you can see below. 
+
+```html
+    <div id="canvas-wrap">
+      <div id="rpm-container">
+        <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
+        <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
+      </div>
+      <canvas id="unity-canvas" width={{{WIDTH}}} height={{{HEIGHT}}}></canvas>
+    </div>
+```
+
+To keep things clean we separated the javascript logic into two separate files. There is UnitySetup.js which is based off the Unity Default template, and ReadyPlayerMeFrame.js which we created to handle the setup of the iFrame that will run readyplayer.me. 
+
+### WebGLHelper
+
+To communicate from Unity to the iFrame running Ready Player me we created a Javascript Library called WebHelper.jslib as shown below it has 3 functions.
+
+```js
+mergeInto(LibraryManager.library, {
+
+    ShowReadyPlayerMeFrame: function () {
+        var rpmContainer = document.getElementById("rpm-container");
+        rpmContainer.style.display = "block";
+    },
+  
+    HideReadyPlayerMeFrame: function () {
+        var rpmContainer = document.getElementById("rpm-container");
+        rpmContainer.style.display = "none";
+    },
+        
+    SetupRpm: function (partner){
+        setupRpmFrame(UTF8ToString(partner));
+    },
+}); 
+```
+
+As the names suggests there are 2 for showing and hiding the Ready Player Me iFrame, and 1 for setting up the iFrame. By creating this jslib and putting it into the Plugins folder we can import these into Unity Scripts to use them like we have here in the WebInterface.cs class.
+
+```c#
+
+using System.Runtime.InteropServices;
+
+public static class WebInterface
+{
+    [DllImport("__Internal")]
+    private static extern void SetupRpm(string partner);
+    
+    [DllImport("__Internal")]
+    private static extern void ShowReadyPlayerMeFrame();
+    
+    [DllImport("__Internal")]
+    private static extern void HideReadyPlayerMeFrame();
+...
+```
+Once declared this way they can be called like regular C# functions (on WebGL builds). 
+
+
+
