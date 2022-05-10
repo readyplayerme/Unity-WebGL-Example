@@ -44,7 +44,7 @@ function setupRpmFrame(subdomain) {
             rpmContainer.style.display = "none";
             // Send message to a Gameobject in the current scene
             unityGame.SendMessage(
-                "ReadyPlayerMeAvatar", // Target GameObject name
+                "WebAvatarLoader", // Target GameObject name
                 "OnWebViewAvatarGenerated", // Name of function to run
                 json.data.url
             );
