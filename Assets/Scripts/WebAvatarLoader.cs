@@ -4,7 +4,7 @@ using UnityEngine;
 public class WebAvatarLoader : MonoBehaviour
 {
     private GameObject avatar;
-    private string AvatarURL = "https://d1a370nemizbjq.cloudfront.net/5cae00e5-5622-47c7-af0d-02028fad5beb.glb";
+    private string AvatarURL = "";
     private AvatarLoader avatarLoader;
 
     private void Start()
@@ -12,6 +12,18 @@ public class WebAvatarLoader : MonoBehaviour
         PartnerSO partner = Resources.Load<PartnerSO>("Partner");
         WebInterface.SetupRpmFrame(partner.Subdomain);
         avatarLoader = new AvatarLoader();
+    }
+    
+    public void OnWebViewAvatarGenerated(string avatarUrl)
+    {
+        LoadAvatar(avatarUrl);
+    }
+    
+    public void LoadAvatar(string avatarUrl)
+    {
+        AvatarURL = avatarUrl;
+        avatarLoader.LoadAvatar(AvatarURL, OnAvatarImported, OnAvatarLoaded);
+        if (avatar) Destroy(avatar);
     }
 
     private void OnAvatarImported(GameObject avatar)
@@ -23,17 +35,5 @@ public class WebAvatarLoader : MonoBehaviour
     {
         this.avatar = avatar;
         Debug.Log($"Avatar loaded. [{Time.timeSinceLevelLoad:F2}]\n\n{metaData}");
-    }
-
-    public void LoadAvatar(string avatarUrl)
-    {
-        AvatarURL = avatarUrl;
-        avatarLoader.LoadAvatar(AvatarURL, OnAvatarImported, OnAvatarLoaded);
-        if (avatar) Destroy(avatar);
-    }
-
-    public void OnWebViewAvatarGenerated(string avatarUrl)
-    {
-        LoadAvatar(avatarUrl);
     }
 }
