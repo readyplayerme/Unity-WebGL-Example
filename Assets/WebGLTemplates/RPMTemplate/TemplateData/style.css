@@ -3,6 +3,8 @@
   margin: 0;
   position: relative;
   margin-bottom: 4px;
+  width: {{{WIDTH}}}px;
+  height: {{{HEIGHT}}}px;
 }
 
 #rpm-container
