@@ -86,7 +86,7 @@ The next of the logic here is used to filter the events, so that we only handle 
 ```
 
 
-### Subscribing to events
+### Subscribing to Ready Player Me events
 
 Next we need to explicitly subscribe to our latest subscription service by listening for the `v1.frame.ready` event and sending a postMessage to trigger the subscription as you can see below. 
 
