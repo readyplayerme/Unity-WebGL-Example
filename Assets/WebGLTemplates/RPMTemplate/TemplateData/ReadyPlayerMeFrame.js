@@ -42,9 +42,10 @@ function setupRpmFrame(subdomain) {
         // Get avatar GLB URL
         if (json.eventName === "v1.avatar.exported") {
             rpmContainer.style.display = "none";
+            // Send message to a Gameobject in the current scene
             unityGame.SendMessage(
-                "ReadyPlayerMeAvatar",
-                "OnWebViewAvatarGenerated",
+                "ReadyPlayerMeAvatar", // Target GameObject name
+                "OnWebViewAvatarGenerated", // Name of function to run
                 json.data.url
             );
             console.log(`Avatar URL: ${json.data.url}`);
