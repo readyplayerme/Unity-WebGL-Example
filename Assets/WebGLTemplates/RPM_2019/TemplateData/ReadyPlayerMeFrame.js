@@ -12,7 +12,7 @@ function setupRpmFrame(subdomain) {
             return;
         }
         unityGame.SendMessage(
-            "DebugCanvas",
+            "DebugPanel",
             "LogMessage",
             `Event: ${json.eventName}`
         );
@@ -33,7 +33,7 @@ function setupRpmFrame(subdomain) {
         if (json.eventName === "v1.avatar.exported") {
             rpmContainer.style.display = "none";
             unityGame.SendMessage(
-                "ReadyPlayerMeAvatar",
+                "WebAvatarLoader",
                 "OnWebViewAvatarGenerated",
                 json.data.url
             );
