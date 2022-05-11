@@ -1,0 +1,109 @@
+#webgl-content * {border: 0; margin: 0; padding: 0}
+#webgl-content {position: absolute; top: 50%; left: 50%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%);}
+
+#webgl-content .logo, .progress {position: absolute; left: 50%; top: 50%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%);}
+#webgl-content .logo {background: url('progressLogo.Light.png') no-repeat center / contain; width: 154px; height: 130px;}
+#webgl-content .progress {height: 18px; width: 141px; margin-top: 90px;}
+#webgl-content .progress .empty {background: url('progressEmpty.Light.png') no-repeat right / cover; float: right; width: 100%; height: 100%; display: inline-block;}
+#webgl-content .progress .full {background: url('progressFull.Light.png') no-repeat left / cover; float: left; width: 0%; height: 100%; display: inline-block;}
+
+#webgl-content .logo.Dark {background-image: url('progressLogo.Dark.png');}
+#webgl-content .progress.Dark .empty {background-image: url('progressEmpty.Dark.png');}
+#webgl-content .progress.Dark .full {background-image: url('progressFull.Dark.png');}
+
+#webgl-content .footer {margin-top: 5px; height: 38px; line-height: 38px; font-family: Helvetica, Verdana, Arial, sans-serif; font-size: 18px;}
+#webgl-content .footer .webgl-logo, .title, .fullscreen {height: 100%; display: inline-block; background: transparent center no-repeat;}
+#webgl-content .footer .webgl-logo {background-image: url('webgl-logo.png'); width: 204px; float: left;}
+#webgl-content .footer .title {margin-right: 10px; float: right;}
+#webgl-content .footer .fullscreen {background-image: url('fullscreen.png'); width: 38px; float: right;}
+
+#canvas-wrap {
+    padding: 0;            
+    margin: 0;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+#rpm-container
+{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position:absolute;
+    display:none;
+    pointer-events: inherit;
+    z-index:10;
+}
+
+.rpm-frame {
+    width: 100%;
+    height: 95%;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+    Droid Sans, Helvetica Neue, sans-serif;
+    font-size: 14px;
+    border: none;
+    display:block;
+    pointer-events: inherit;
+}
+
+#rpm-hide-button {
+    cursor: pointer;
+    width: 100%;
+    height: 5%;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+    Droid Sans, Helvetica Neue, sans-serif;
+    font-size: 14px;
+    border: none;
+    color:#000;
+    background-color: #e2e3ec;
+    padding: 0;
+    margin: 0;
+    box-shadow: inset 0px 0px 8px 2px rgba(0,0,0,0.2);
+    pointer-events: inherit;
+}
+
+#rpm-hide-button:hover {
+    background-color: #f1f2fa;
+}
+
+#rpm-hide-button:Active {
+    background-color: #e2e3ec;
+}
+
+.warning {
+    background-color: #b4b6c5;
+    padding: 3px;
+    border-radius: 5px;
+    color: white;
+}
+
+#page-title {
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+    Droid Sans, Helvetica Neue, sans-serif;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    margin: auto;
+}
+
+#webgl-content.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
+#webgl-content.unity-mobile { width: 100%!important; height: 100%!important; }
+#unity-container {background-color: #ffffff!important;}
+
+/*Default Unity styles*/
+body { padding: 0; margin: 0 }
+#webgl-content { position: absolute;pointer-events: inherit; }
+#webgl-content.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
+#webgl-content.unity-mobile { width: 100%; height: 100% }
+#unity-container { background: #231F20;pointer-events: inherit; display:block; width: 100%!important ; height: 100%!important  }
+.unity-mobile #unity-canvas { width: 100%; height: 100% }
+#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none }
+#unity-footer { position: relative }
+.unity-mobile #unity-footer { display: none }
+#unity-webgl-logo { float:left; width: 204px; height: 38px; background: url('webgl-logo.png') no-repeat center }
+#unity-build-title { float: right; margin-right: 10px; line-height: 38px; font-family: arial; font-size: 18px }
+#unity-mobile-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }

@@ -1,0 +1,94 @@
+#canvas-wrap {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  margin-bottom: 4px;
+  width: {{{WIDTH}}}px;
+  height: {{{HEIGHT}}}px;
+}
+
+#rpm-container
+{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position:absolute;
+  display:none;
+  pointer-events: inherit;
+}
+
+.rpm-frame {
+  width: 100%;
+  height: 95%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+  Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 14px;
+  border: none;
+  display:block;
+  pointer-events: inherit;
+}
+
+#rpm-hide-button {
+  cursor: pointer;
+  width: 100%;
+  height: 5%;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+  Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 14px;
+  border: none;
+  color:#000;
+  background-color: #e2e3ec;
+  padding: 0;
+  margin: 0;
+  box-shadow: inset 0px 0px 8px 2px rgba(0,0,0,0.2);
+  pointer-events: inherit;
+}
+
+#rpm-hide-button:hover {
+  background-color: #f1f2fa;
+}
+
+#rpm-hide-button:Active {
+  background-color: #e2e3ec;
+}
+
+.warning {
+  background-color: #b4b6c5;
+  padding: 3px;
+  border-radius: 5px;
+  color: white;
+}
+
+#page-title {
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+  Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 24px;
+  line-height: 30px;
+  text-align: center;
+  margin: auto;
+}
+
+#unity-container.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
+#unity-container.unity-mobile { width: 100%!important; height: 100%!important; }
+
+/*Default Unity styles*/
+body { padding: 0; margin: 0 }
+#unity-container { position: absolute;pointer-events: inherit; }
+#unity-container.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
+#unity-container.unity-mobile { width: 100%; height: 100% }
+#unity-canvas { background: #231F20;pointer-events: inherit; display:block; width: 100%!important ; height: 100%!important  }
+.unity-mobile #unity-canvas { width: 100%; height: 100% }
+#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none }
+#unity-logo { width: 154px; height: 130px; background: url('unity-logo-dark.png') no-repeat center }
+#unity-progress-bar-empty { width: 141px; height: 18px; margin-top: 10px; background: url('progress-bar-empty-dark.png') no-repeat center }
+#unity-progress-bar-full { width: 0%; height: 18px; margin-top: 10px; background: url('progress-bar-full-dark.png') no-repeat center }
+#unity-footer { position: relative }
+.unity-mobile #unity-footer { display: none }
+#unity-webgl-logo { float:left; width: 204px; height: 38px; background: url('webgl-logo.png') no-repeat center }
+#unity-build-title { float: right; margin-right: 10px; line-height: 38px; font-family: arial; font-size: 18px }
+#unity-fullscreen-button { float: right; width: 38px; height: 38px; background: url('fullscreen-button.png') no-repeat center }
+#unity-mobile-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }
