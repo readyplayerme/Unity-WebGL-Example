@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  </head>
+  <body >
+  <div id="unity-container" class="unity-desktop">
+    <div id="canvas-wrap" >
+      <div id="rpm-container">
+        <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
+        <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
+      </div>
+      <canvas id="unity-canvas" ></canvas>
+    </div>
+  <div id="unity-loading-bar">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
+    </div>
+  </div>
+  <div id="unity-warning"> </div>
+  <div id="unity-footer" style="">
+    <div id="unity-webgl-logo"></div>
+    <div id="unity-fullscreen-button"></div>
+    <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
+  </div>
+</div>
+    <script src="TemplateData/Global.js"></script>
+    <script src="TemplateData/UnitySetup.js"></script>
+    <script src="TemplateData/ReadyPlayerMeFrame.js"></script>
+  </body>
+</html>
