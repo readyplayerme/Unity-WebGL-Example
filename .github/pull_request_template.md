@@ -9,7 +9,7 @@
 
 -   Briefly describe what this change will do
 
-<!-- Fill the section below with Additons, Updated and Removals. -->
+<!-- Fill the section below with Added, Updated and Removed. -->
 <!-- If there is no item under one of the lists remove it's title. -->
 
 ## Changes
