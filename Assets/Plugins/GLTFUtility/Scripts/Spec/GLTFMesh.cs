@@ -65,7 +65,7 @@ namespace Siccity.GLTFUtility {
 					} else {
 						for (int i = 0; i < gltfMesh.primitives.Count; i++) {
 							GLTFPrimitive primitive = gltfMesh.primitives[i];
-		
+
 							int vertStartIndex = verts.Count;
 							submeshVertexStart.Add(vertStartIndex);
 
@@ -331,10 +331,10 @@ namespace Siccity.GLTFUtility {
 				});
 			}
 
-			public override IEnumerator OnCoroutine(Action<float> onProgress = null) {
+			public override IEnumerator OnCoroutine(Action<float, ImportType> onProgress = null) {
 				// No mesh
 				if (meshData == null) {
-					if (onProgress != null) onProgress.Invoke(1f);
+					if (onProgress != null) onProgress.Invoke(1f, ImportType.MESH);
 					IsCompleted = true;
 					yield break;
 				}
@@ -363,7 +363,7 @@ namespace Siccity.GLTFUtility {
 						}
 					}
 					if (string.IsNullOrEmpty(Result[i].mesh.name)) Result[i].mesh.name = "mesh" + i;
-					if (onProgress != null) onProgress.Invoke((float) (i + 1) / (float) meshData.Length);
+					if (onProgress != null) onProgress.Invoke((float) (i + 1) / (float) meshData.Length, ImportType.MESH);
 					yield return null;
 				}
 				IsCompleted = true;

@@ -8,6 +8,7 @@ namespace Siccity.GLTFUtility {
 	public enum Format { AUTO, GLTF, GLB }
 	public enum CameraType { perspective, orthographic }
 	public enum InterpolationMode { ImportFromFile = -1, LINEAR = 0, STEP = 1, CUBICSPLINE = 2 }
+	public enum ImportType {MESH, MATERIAL, NODE }
 
 	public static class EnumExtensions {
 		public static int ByteSize(this GLType gltype) {

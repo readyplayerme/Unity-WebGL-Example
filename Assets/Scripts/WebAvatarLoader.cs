@@ -31,7 +31,7 @@ public class WebAvatarLoader : MonoBehaviour
         Debug.Log($"Avatar imported. [{Time.timeSinceLevelLoad:F2}]");
     }
 
-    private void OnAvatarLoaded(GameObject avatar, AvatarMetaData metaData)
+    private void OnAvatarLoaded(GameObject avatar, AvatarMetadata metaData)
     {
         this.avatar = avatar;
         Debug.Log($"Avatar loaded. [{Time.timeSinceLevelLoad:F2}]\n\n{metaData}");
