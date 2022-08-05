@@ -50,7 +50,7 @@ namespace Siccity.GLTFUtility {
 			return ImportGLB(bytes, importSettings, out animations);
 		}
 
-		public static void LoadFromFileAsync(string filepath, ImportSettings importSettings, Action<GameObject> onFinished, Action<float> onProgress = null) {
+		public static void LoadFromFileAsync(string filepath, ImportSettings importSettings, Action<GameObject> onFinished, Action<float, ImportType> onProgress = null) {
 			string extension = Path.GetExtension(filepath).ToLower();
 			if (extension == ".glb") ImportGLBAsync(filepath, importSettings, onFinished, onProgress);
 			else if (extension == ".gltf") ImportGLTFAsync(filepath, importSettings, onFinished, onProgress);
@@ -77,14 +77,14 @@ namespace Siccity.GLTFUtility {
 			return gltfObject.LoadInternal(null, bytes, binChunkStart, importSettings, out animations);
 		}
 
-		public static void ImportGLBAsync(string filepath, ImportSettings importSettings, Action<GameObject> onFinished, Action<float> onProgress = null) {
+		public static void ImportGLBAsync(string filepath, ImportSettings importSettings, Action<GameObject> onFinished, Action<float, ImportType> onProgress = null) {
 			FileStream stream = File.OpenRead(filepath);
 			long binChunkStart;
 			string json = GetGLBJson(stream, out binChunkStart);
 			LoadAsync(json, filepath, null, binChunkStart, importSettings, onFinished, onProgress).RunCoroutine();
 		}
 
-		public static void ImportGLBAsync(byte[] bytes, ImportSettings importSettings, Action<GameObject> onFinished, Action<float> onProgress = null) {
+		public static void ImportGLBAsync(byte[] bytes, ImportSettings importSettings, Action<GameObject> onFinished, Action<float, ImportType> onProgress = null) {
 			Stream stream = new MemoryStream(bytes);
 			long binChunkStart;
 			string json = GetGLBJson(stream, out binChunkStart);
@@ -100,15 +100,13 @@ namespace Siccity.GLTFUtility {
 			// 8-12 - length = total length of glb, including Header and all Chunks, in bytes.
 			string magic = Encoding.Default.GetString(buffer, 0, 4);
 			if (magic != "glTF") {
-				Debug.LogWarning("Input does not look like a .glb file");
 				binChunkStart = 0;
-				return null;
+				throw new Exception("Input does not look like a .glb file");
 			}
 			uint version = System.BitConverter.ToUInt32(buffer, 4);
 			if (version != 2) {
-				Debug.LogWarning("Importer does not support gltf version " + version);
 				binChunkStart = 0;
-				return null;
+				throw new Exception("Importer does not support gltf version " + version);
 			}
 			// What do we even need the length for.
 			//uint length = System.BitConverter.ToUInt32(bytes, 8);
@@ -141,7 +139,7 @@ namespace Siccity.GLTFUtility {
 			return gltfObject.LoadInternal(filepath, null, 0, importSettings, out animations);
 		}
 
-		public static void ImportGLTFAsync(string filepath, ImportSettings importSettings, Action<GameObject> onFinished, Action<float> onProgress = null) {
+		public static void ImportGLTFAsync(string filepath, ImportSettings importSettings, Action<GameObject> onFinished, Action<float, ImportType> onProgress = null) {
 			string json = File.ReadAllText(filepath);
 
 			// Parse json
@@ -175,12 +173,11 @@ namespace Siccity.GLTFUtility {
 				this.waitFor = waitFor;
 			}
 
-			public virtual IEnumerator OnCoroutine(Action<float> onProgress = null) {
+			public virtual IEnumerator OnCoroutine(Action<float, ImportType> onProgress = null) {
 				IsCompleted = true;
 				yield break;
 			}
 		}
-
 #region Sync
 		private static GameObject LoadInternal(this GLTFObject gltfObject, string filepath, byte[] bytefile, long binChunkStart, ImportSettings importSettings, out AnimationClip[] animations) {
 			CheckExtensions(gltfObject);
@@ -222,7 +219,7 @@ namespace Siccity.GLTFUtility {
 #endregion
 
 #region Async
-		private static IEnumerator LoadAsync(string json, string filepath, byte[] bytefile, long binChunkStart, ImportSettings importSettings, Action<GameObject> onFinished, Action<float> onProgress = null) {
+		private static IEnumerator LoadAsync(string json, string filepath, byte[] bytefile, long binChunkStart, ImportSettings importSettings, Action<GameObject> onFinished, Action<float, ImportType> onProgress = null) {
 			// Threaded deserialization
 			Task<GLTFObject> deserializeTask = new Task<GLTFObject>(() => JsonConvert.DeserializeObject<GLTFObject>(json));
 			deserializeTask.Start();
@@ -275,8 +272,7 @@ namespace Siccity.GLTFUtility {
 		}
 
 		/// <summary> Keeps track of which threads to start when </summary>
-		private static IEnumerator TaskSupervisor(ImportTask importTask, Action<float> onProgress = null)
-		{
+		private static IEnumerator TaskSupervisor(ImportTask importTask, Action<float, ImportType> onProgress = null) {
 			// Wait for required results to complete before starting
 			while (!importTask.IsReady) yield return null;
 			// Prevent asynchronous data disorder

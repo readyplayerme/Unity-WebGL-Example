@@ -9,7 +9,7 @@ The zlib License
 -------------------------------------
 Copyright (C) 2011 Keijiro Takahashi
 Copyright (C) 2012 GREE, Inc.
-Copyright (C) 2021 Wolf3D
+Copyright (C) 2021 Ready Player Me
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -35,7 +35,7 @@ License Type: MIT
 MIT License
 
 Copyright (c) 2018 Thor Brigsted
-Copyright (c) 2021 Wolf3D
+Copyright (c) 2021 Ready Player Me
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

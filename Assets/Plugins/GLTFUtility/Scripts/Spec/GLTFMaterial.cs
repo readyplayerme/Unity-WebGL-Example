@@ -291,10 +291,10 @@ namespace Siccity.GLTFUtility {
 				});
 			}
 
-			public override IEnumerator OnCoroutine(Action<float> onProgress = null) {
+			public override IEnumerator OnCoroutine(Action<float, ImportType> onProgress = null) {
 				// No materials
 				if (materials == null) {
-					if (onProgress != null) onProgress.Invoke(1f);
+					if (onProgress != null) onProgress.Invoke(1f, ImportType.MATERIAL);
 					IsCompleted = true;
 					yield break;
 				}
@@ -306,7 +306,7 @@ namespace Siccity.GLTFUtility {
 					while (en.MoveNext()) { yield return null; };
 
 					if (Result[i].material.name == null) Result[i].material.name = "material" + i;
-					if (onProgress != null) onProgress.Invoke((float) (i + 1) / (float) Result.Length);
+					if (onProgress != null) onProgress.Invoke((float) (i + 1) / (float) Result.Length, ImportType.MATERIAL);
 					yield return null;
 				}
 				IsCompleted = true;
