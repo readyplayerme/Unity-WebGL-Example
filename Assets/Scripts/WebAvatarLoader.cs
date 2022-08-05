@@ -3,37 +3,33 @@ using UnityEngine;
 
 public class WebAvatarLoader : MonoBehaviour
 {
+    private const string TAG = nameof(WebAvatarLoader);
     private GameObject avatar;
-    private string AvatarURL = "";
-    private AvatarLoader avatarLoader;
+    private string avatarUrl = "";
 
     private void Start()
     {
         PartnerSO partner = Resources.Load<PartnerSO>("Partner");
         WebInterface.SetupRpmFrame(partner.Subdomain);
-        avatarLoader = new AvatarLoader();
     }
     
-    public void OnWebViewAvatarGenerated(string avatarUrl)
+    public void OnWebViewAvatarGenerated(string generatedUrl)
     {
-        LoadAvatar(avatarUrl);
+        var avatarLoader = new AvatarLoader();
+        avatarUrl = generatedUrl;
+        avatarLoader.OnCompleted += OnAvatarLoadCompleted;
+        avatarLoader.OnFailed += OnAvatarLoadFailed;
+        avatarLoader.LoadAvatar(avatarUrl);
     }
-    
-    public void LoadAvatar(string avatarUrl)
+
+    private void OnAvatarLoadCompleted(object sender, CompletionEventArgs args)
     {
-        AvatarURL = avatarUrl;
-        avatarLoader.LoadAvatar(AvatarURL, OnAvatarImported, OnAvatarLoaded);
         if (avatar) Destroy(avatar);
+        avatar = args.Avatar;
     }
 
-    private void OnAvatarImported(GameObject avatar)
+    private void OnAvatarLoadFailed(object sender, FailureEventArgs args)
     {
-        Debug.Log($"Avatar imported. [{Time.timeSinceLevelLoad:F2}]");
-    }
-
-    private void OnAvatarLoaded(GameObject avatar, AvatarMetadata metaData)
-    {
-        this.avatar = avatar;
-        Debug.Log($"Avatar loaded. [{Time.timeSinceLevelLoad:F2}]\n\n{metaData}");
+        SDKLogger.Log(TAG,$"Avatar Load failed with error: {args.Message}");
     }
 }
