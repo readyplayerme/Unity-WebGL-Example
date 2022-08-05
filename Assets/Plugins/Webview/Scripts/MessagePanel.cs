@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class MessagePanel : MonoBehaviour
 {
@@ -13,13 +13,13 @@ public class MessagePanel : MonoBehaviour
 
     private Dictionary<MessageType, string> messageDict = new Dictionary<MessageType, string>()
     {
-        {MessageType.Loading, "Loading..." },
-        {MessageType.NetworkError, "Network is not reachable." },
-        {MessageType.NotSupported, "WebView browser is only supported on Android or iOS.\n \nBuild and run on device to test." }
+        { MessageType.Loading, "Loading..." },
+        { MessageType.NetworkError, "Network is not reachable." },
+        { MessageType.NotSupported, "WebView browser is only supported on Android or iOS.\n \nBuild and run on device to test." }
     };
 
     [SerializeField] private Text messageLabel = null;
-    
+
     // Set text message to the Message panel
     public void SetMessage(string message)
     {

@@ -63,10 +63,10 @@ namespace Siccity.GLTFUtility {
 				task = new Task(() => { });
 			}
 
-			public override IEnumerator OnCoroutine(Action<float> onProgress = null) {
+			public override IEnumerator OnCoroutine(Action<float, ImportType> onProgress = null) {
 				// No nodes
 				if (nodes == null) {
-					if (onProgress != null) onProgress.Invoke(1f);
+					if (onProgress != null) onProgress.Invoke(1f, ImportType.NODE);
 					IsCompleted = true;
 					yield break;
 				}
