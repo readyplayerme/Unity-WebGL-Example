@@ -14,7 +14,7 @@ namespace ReadyPlayerMe
     {
         public string Url { get; set; }
         public float Progress { get; set; }
-        public ProgressType Type { get; set; }
+        public string Operation { get; set; }
     }
 
     public class CompletionEventArgs : EventArgs

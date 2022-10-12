@@ -11,7 +11,7 @@ namespace ReadyPlayerMe
         private ScrollRect logScrollRect;
         private string currentLogOutput = "<color=green>Log Output Started...</color>\n";
         private int logCount;
-        private const int MAX_LOGS = 100;
+        private int maxLogs = 200;
 
         private void Awake()
         {
@@ -45,8 +45,16 @@ namespace ReadyPlayerMe
 
         private void HandleLog(string logString, string stackTrace, LogType type)
         {
-            if (logCount > MAX_LOGS) return;
-            currentLogOutput += $"{(logCount < MAX_LOGS ? logString : "<color=yellow>Maximum number of logs reached. Logging suspended.</color>")}\n";
+            if (logCount <= maxLogs)
+            {
+                currentLogOutput += $"{logString}\n";
+            }
+            else
+            {
+                currentLogOutput = $"<color=yellow>Maximum number of logs reached. Logging Reset.</color>\n";
+                logCount = 0;
+            }
+
             if (showDebugPanel && !pauseLogOutput) UpdateDebugPanel();
         }
 

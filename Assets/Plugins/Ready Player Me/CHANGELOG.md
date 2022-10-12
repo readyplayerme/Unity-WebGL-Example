@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.12.0] - 2022.10.06
+
+### Added
+- Avatar API support in Avatar Loader, now users can create configurable avatars.
+- Avatar Configuration Scriptable Object for requesting avatars with different quality.
+- Global avatar configuration added to Settings window
+- Avatar Caching support for avatars created with different quality configurations.
+- Editor options and scripting API for Avatar Caching, Cache Cleaning and Avatar Config. 
+- Timeout variable in AvatarLoader for setting timeout of all web requests.
+- Shifted to using async/await instead of coroutines.
+- Avatar Loader design shifted from a chain of methods to array of executable operations.
+- Avatar loading operations now can be cancelled.
+- Example scene for Avatar Config usage for showing multiple quality avatar loading.
+
+### Updated
+- Short code handling logic updated for Avatar API.
+- Visual updates for Avatar Loader and Settings windows.
+- Avatar Caching turned off by default.
+- Avatars are now loaded without a default Animation Controller.
+- Avatar URLs in example scenes are updated.
+
+### Fixed
+- Avatar position flicker on load issue is fixed.
+- WebView cache cleanup issue is fixed. KeepSessionAlive usage for restarting avatar loading.
+- Half-body avatar loading error due to no Animator component issue is fixed.
+- WebView white background flicker issue is fixed.
+
 ## [1.11.0] - 2022.08.03
 
 ### Added
@@ -14,20 +41,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Loaded avatars from the Avatar Loader Editor Window are now imported as prefabs.
 - Example on how to load multiple avatars efficiently added to Runtime Examples folder.
 - A new runtime debug panel has been added to the Runtime Example.
+- Support for avatar caching at runtime on builds using persistentDataPath
 
 ### Updated
 - The UI of the Avatar Loader is now cleaner and provides you with the most important functionality.
 - The WebView Partner Editor has been renamed to a more general name Settings.
 
 ### Fixed
-- VoiceHandler blend shape weight fix. 
+- VoiceHandler blend shape weight fix.
 - Avatar Loader and Settings Dialog style issues on first launch, in Unity 2020 and 2021 is fixed.
 - Render pipeline error in Unity 2022 is fixed.
 - Editor Coroutine runner duplicated when switching from play mode to edit mode fixed.
-
-### Added
-
--   Support for avatar caching at runtime on builds using persistentDataPath
 
 ## [1.10.0] - 2022.05.24
 
