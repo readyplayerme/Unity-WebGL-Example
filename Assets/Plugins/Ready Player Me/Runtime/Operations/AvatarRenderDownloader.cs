@@ -1,98 +1,81 @@
 ﻿using System;
-using System.Collections;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace ReadyPlayerMe
 {
-    public class AvatarRenderDownloader
+    public class AvatarRenderDownloader : IOperation<AvatarContext>
     {
         private const string TAG = nameof(AvatarRenderDownloader);
         private const string RENDER_URL = "https://render.readyplayer.me/render";
         private const string INVALID_RENDER_URL_ERROR = "Not a valid Avatar Render Url. Check render settings";
+        private const string RENDERS = "renders";
         private readonly string[] renderExtensions = { ".png", ".jpg" };
 
-        // Called upon failure
-        public Action<FailureType, string> OnFailed { get; set; }
+        public int Timeout { get; set; }
+        public Action<float> ProgressChanged { get; set; }
 
-        /// Called upon success.
-        public Action<Texture2D> OnCompleted { get; set; }
-
-        public IEnumerator RequestAvatarRenderUrl(byte[] payload)
+        public async Task<AvatarContext> Execute(AvatarContext context, CancellationToken token)
         {
-            using (UnityWebRequest request = UnityWebRequest.Put(RENDER_URL, payload))
+            try
             {
-                request.method = "POST";
-                request.SetRequestHeader("Content-Type", "application/json");
-
-                yield return request.SendWebRequest();
-
-                if (request.isNetworkError || request.isHttpError)
-                {
-                    Fail(FailureType.AvatarRenderError, request.error);
-                }
-                else
-                {
-                    DownloadAvatarRenderTexture(request.downloadHandler.text).Run();
-                }
+                context.Data = await RequestAvatarRenderUrl(context.Bytes, token);
+                SDKLogger.Log(TAG, "Avatar Render Downloaded");
+                return context;
+            }
+            catch (CustomException exception)
+            {
+                throw new CustomException(FailureType.AvatarRenderError, exception.Message);
             }
         }
 
-        private IEnumerator DownloadAvatarRenderTexture(string data)
+        public async Task<Texture2D> RequestAvatarRenderUrl(byte[] payload, CancellationToken token = new CancellationToken())
         {
-            string avatarRenderUrl;
+            string response;
+            var dispatcher = new WebRequestDispatcher();
+            dispatcher.ProgressChanged += ProgressChanged;
 
             try
             {
-                var renderData = JObject.Parse(data);
-                avatarRenderUrl = renderData["renders"][0].ToString();
+                response = await dispatcher.Dispatch(RENDER_URL, payload, token);
+
+            }
+            catch (CustomException exception)
+            {
+                throw new CustomException(exception.FailureType, exception.Message);
+            }
+
+            return await Parse(response, token);
+        }
+
+        private async Task<Texture2D> Parse(string json, CancellationToken token)
+        {
+            try
+            {
+                var renderData = JObject.Parse(json);
+                var avatarRenderUrl = renderData[RENDERS][0].ToString();
 
                 if (string.IsNullOrEmpty(avatarRenderUrl) || !ValidateRenderUrl(avatarRenderUrl))
                 {
-                    Fail(FailureType.AvatarRenderError, INVALID_RENDER_URL_ERROR);
-                    yield break;
+                    throw new CustomException(FailureType.AvatarRenderError, INVALID_RENDER_URL_ERROR);
                 }
-            }
-            catch (Exception e)
-            {
-                Fail(FailureType.AvatarRenderError, e.Message);
-                yield break;
-            }
 
-            using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(avatarRenderUrl))
+                var webRequestDispatcher = new WebRequestDispatcher();
+                return await webRequestDispatcher.DownloadTexture(avatarRenderUrl, token);
+            }
+            catch (Exception exception)
             {
-                yield return request.SendWebRequest();
-
-                if (request.isNetworkError || request.isHttpError)
-                {
-                    Fail(FailureType.AvatarRenderError, request.error);
-                }
-                else
-                {
-                    SDKLogger.Log(TAG, "Avatar Render Downloaded");
-                    if (request.downloadHandler is DownloadHandlerTexture downloadHandlerTexture) OnCompleted?.Invoke(downloadHandlerTexture.texture);
-                }
+                throw new CustomException(FailureType.AvatarRenderError, exception.Message);
             }
         }
 
         private bool ValidateRenderUrl(string renderUrl)
         {
             var url = renderUrl.ToLower();
-            foreach (var extension in renderExtensions)
-            {
-                if (url.EndsWith(extension))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void Fail(FailureType type, string message)
-        {
-            OnFailed?.Invoke(FailureType.AvatarRenderError, message);
+            return renderExtensions.Any(extension => url.EndsWith(extension));
         }
     }
 }

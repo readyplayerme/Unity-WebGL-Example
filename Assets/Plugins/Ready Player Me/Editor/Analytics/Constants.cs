@@ -10,7 +10,7 @@
             public const string OPEN_DISCORD = "open discord";
             public const string LOAD_AVATAR_FROM_DIALOG = "load avatar from dialog";
             public const string UPDATED_PARTNER_URL = "updated partner url";
-            public const string ALLOW_LOGGING = "allow tracking";
+            public const string ALLOW_ANALYTICS = "allow analytics";
             public const string OPEN_DIALOG = "open dialog";
             public const string BUILD_APPLICATION = "build application";
             public const string CLOSE_PROJECT = "close project";
@@ -34,6 +34,7 @@
             public const string PRODUCTION_BUILD = "production build";
             public const string AVATAR_URL = "avatar url";
             public const string APP_IDENTIFIER = "app identifier";
+            public const string ALLOW_ANALYTICS = "allow analytics";
         }
 
         public static class AmplitudeKeys

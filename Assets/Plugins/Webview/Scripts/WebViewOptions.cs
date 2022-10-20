@@ -14,7 +14,7 @@ public enum WebkitContentMode
 
 public class WebViewOptions
 {
-    public bool Transparent = false;
+    public bool Transparent = true;
     public bool Zoom = false;
     public string UA = "";
     public ColorMode AndroidForceDarkMode = ColorMode.DarkModeOff;
