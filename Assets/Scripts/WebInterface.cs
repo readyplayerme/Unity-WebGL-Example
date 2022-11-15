@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 public static class WebInterface
 {
-
+#if !UNITY_EDITOR && UNITY_WEBGL
     [DllImport("__Internal")]
     private static extern void SetupRpm(string partner);
     
@@ -14,7 +14,7 @@ public static class WebInterface
 
     public static void SetIFrameVisibility(bool isVisible)
     {
-#if !UNITY_EDITOR && UNITY_WEBGL
+
         if (isVisible)
         {
             
@@ -23,14 +23,12 @@ public static class WebInterface
         }
 
         HideReadyPlayerMeFrame();
-#endif
-    }
 
+    }
     public static void SetupRpmFrame(string partner)
     {
-#if !UNITY_EDITOR && UNITY_WEBGL
         SetupRpm(partner);
-#endif
-    }
 
+    }
+#endif
 }
