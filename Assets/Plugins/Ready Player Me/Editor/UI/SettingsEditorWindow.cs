@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
+using ReadyPlayerMe.Analytics;
 using UnityEditor;
 using UnityEngine;
-using ReadyPlayerMe.Analytics;
 
 namespace ReadyPlayerMe
 {
@@ -54,7 +54,7 @@ namespace ReadyPlayerMe
 
         private AvatarConfig avatarConfig;
 
-        private bool subdomainFocused = false;
+        private bool subdomainFocused;
         private string subdomainAfterFocus = string.Empty;
         private const string SUBDOMAIN_FIELD_CONTROL_NAME = "subdomain";
 
@@ -87,7 +87,7 @@ namespace ReadyPlayerMe
         {
             isCacheEmpty = AvatarCache.IsCacheEmpty();
         }
-        
+
         private void OnGUI()
         {
             if (!initialized) Initialize();
@@ -164,7 +164,7 @@ namespace ReadyPlayerMe
                 DrawOtherSection();
             });
         }
-            
+
         private void DrawPartnerSettings()
         {
             Vertical(() =>
@@ -174,12 +174,12 @@ namespace ReadyPlayerMe
                 Horizontal(() =>
                 {
                     GUILayout.Space(2);
-                    
+
                     EditorGUILayout.LabelField("Your subdomain:          https:// ", textLabelStyle, GUILayout.Width(176));
                     var oldValue = partnerSubdomain;
                     GUI.SetNextControlName(SUBDOMAIN_FIELD_CONTROL_NAME);
                     partnerSubdomain = EditorGUILayout.TextField(oldValue, textFieldStyle, GUILayout.Width(128), GUILayout.Height(20));
-                    
+
                     EditorGUILayout.LabelField(".readyplayer.me", textLabelStyle, GUILayout.Width(116), GUILayout.Height(20));
                     GUIContent button = new GUIContent((Texture) AssetDatabase.LoadAssetAtPath("Assets/Plugins/Ready Player Me/Editor/error.png", typeof(Texture)), DOMAIN_VALIDATION_ERROR);
 
@@ -330,7 +330,7 @@ namespace ReadyPlayerMe
 
             return false;
         }
-        
+
         private bool ValidateSubdomain()
         {
             return !partnerSubdomain.All(char.IsWhiteSpace) && !partnerSubdomain.Contains('/') && !EditorUtilities.IsUrlShortcodeValid(partnerSubdomain);

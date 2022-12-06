@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine.Networking;
 
 namespace ReadyPlayerMe
 {
@@ -49,7 +48,7 @@ namespace ReadyPlayerMe
                 return CreateFromUrl(url, paramsHash, avatarApiParameters).Result;
             }
 
-            var urlFromShortCode = await GetUrlFromShortCode(url, token);
+            var urlFromShortCode = await GetUrlFromShortCode(url);
             return CreateFromUrl(urlFromShortCode, paramsHash, avatarApiParameters).Result;
         }
 
@@ -80,28 +79,11 @@ namespace ReadyPlayerMe
             }
         }
 
-        private async Task<string> GetUrlFromShortCode(string shortCode, CancellationToken token)
+        private Task<string> GetUrlFromShortCode(string shortCode)
         {
-            SDKLogger.Log(TAG, "Getting URL from shortcode");
-            var url = shortCode.Contains("/") ? shortCode : $"{SHORT_CODE_BASE_URL}/{shortCode}.glb";
-            using (var request = UnityWebRequest.Get(url))
-            {
-                var asyncOperation = request.SendWebRequest();
-                while (!asyncOperation.isDone && !token.IsCancellationRequested)
-                {
-                    await Task.Yield();
-                    ProgressChanged?.Invoke(request.downloadProgress);
-                }
-
-                token.ThrowCustomExceptionIfCancellationRequested();
-
-                if (request.isHttpError || request.isNetworkError)
-                {
-                    throw Fail(FailureType.ShortCodeError, $"Invalid avatar shortcode {request.error}");
-                }
-
-                return request.url;
-            }
+            SDKLogger.Log(TAG, "TEST: Getting URL from shortcode");
+            var url = $"{SHORT_CODE_BASE_URL}/{shortCode}.glb";
+            return Task.FromResult(url);
         }
 
         private Exception Fail(FailureType failureType, string message)
