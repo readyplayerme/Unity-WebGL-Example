@@ -20,19 +20,27 @@ namespace ReadyPlayerMe.Analytics
         public void Enable()
         {
             isEnabled = true;
-            GenerateSessionId();
-            AllowLogging(true);
+            if (!amplitudeEventLogger.IsSessionIdSet())
+            {
+                GenerateSessionId();
+            }
+            ToggleAnalytics(true);
         }
 
         public void Disable()
         {
-            AllowLogging(false);
+            ToggleAnalytics(false);
             isEnabled = false;
+            amplitudeEventLogger.SetSessionId(0);
         }
 
         public void IdentifyUser()
         {
             if (!isEnabled) return;
+            if (!amplitudeEventLogger.IsSessionIdSet())
+            {
+                GenerateSessionId();
+            }
             amplitudeEventLogger.SetUserProperties();
         }
 
@@ -94,7 +102,7 @@ namespace ReadyPlayerMe.Analytics
             {
                 { Constants.Properties.PREVIOUS_SUBDOMAIN, previousSubdomain },
                 { Constants.Properties.NEW_SUBDOMAIN, newSubdomain }
-            }, new Dictionary<string, string>()
+            }, new Dictionary<string, object>()
             {
                 { Constants.Properties.SUBDOMAIN, newSubdomain }
             });
@@ -122,23 +130,27 @@ namespace ReadyPlayerMe.Analytics
             });
         }
 
-        private void GenerateSessionId() => amplitudeEventLogger.SetSessionId(DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        private void GenerateSessionId()
+        {
+            amplitudeEventLogger.SetSessionId(DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        }
 
-        private void AllowLogging(bool allow)
+        private void ToggleAnalytics(bool allow)
         {
             if (!isEnabled) return;
             var appData = ApplicationData.GetData();
-            amplitudeEventLogger.LogEvent(Constants.EventName.ALLOW_LOGGING, new Dictionary<string, object>()
+            amplitudeEventLogger.LogEvent(Constants.EventName.ALLOW_ANALYTICS, new Dictionary<string, object>()
             {
                 { Constants.Properties.ALLOW, allow }
-            }, new Dictionary<string, string>
+            }, new Dictionary<string, object>
             {
                 { Constants.Properties.ENGINE_VERSION, appData.UnityVersion },
                 { Constants.Properties.RENDER_PIPELINE, appData.RenderPipeline },
                 { Constants.Properties.SUBDOMAIN, appData.PartnerName },
                 { Constants.Properties.APP_NAME, PlayerSettings.productName },
                 { Constants.Properties.SDK_TARGET, "Unity" },
-                { Constants.Properties.APP_IDENTIFIER, Application.identifier }
+                { Constants.Properties.APP_IDENTIFIER, Application.identifier },
+                { Constants.Properties.ALLOW_ANALYTICS, allow }
             });
         }
     }

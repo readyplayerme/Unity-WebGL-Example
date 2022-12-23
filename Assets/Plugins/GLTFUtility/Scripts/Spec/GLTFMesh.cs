@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Scripting;
+using Object = UnityEngine.Object;
 
 namespace Siccity.GLTFUtility {
 	// https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#mesh
@@ -280,6 +281,11 @@ namespace Siccity.GLTFUtility {
 							newMesh.AddBlendShapeFrame(name, weight, deltaVertices, zero, deltaTangents);
 						}
 					}
+#if UNITY_EDITOR
+					Object.DestroyImmediate(selected);
+#else
+					Object.Destroy(selected);
+#endif
 
 					return newMesh;
 				}

@@ -1,12 +1,54 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ReadyPlayerMe
 {
-    public class AvatarProcessor
+    public class AvatarProcessor : IOperation<AvatarContext>
     {
         private const string TAG = nameof(AvatarProcessor);
-        public Action<FailureType, string> OnFailed { get; set; }
+
+        public int Timeout { get; set; }
+        public Action<float> ProgressChanged { get; set; }
+
+        public Task<AvatarContext> Execute(AvatarContext context, CancellationToken token)
+        {
+            if (context.Data is GameObject)
+            {
+                context = ProcessAvatarGameObject(context);
+                ProcessAvatar(context.Data as GameObject, context.Metadata);
+                ProgressChanged?.Invoke(1);
+                return Task.FromResult(context);
+            }
+
+            throw new CustomException(FailureType.AvatarProcessError, $"Avatar postprocess failed. {context.Data} is either null or is not of type GameObject");
+        }
+
+        private AvatarContext ProcessAvatarGameObject(AvatarContext context)
+        {
+#if UNITY_EDITOR
+            if (context.SaveInProjectFolder)
+            {
+                Object.DestroyImmediate((Object) context.Data);
+                AssetDatabase.Refresh();
+                var path = $"{DirectoryUtility.GetRelativeProjectPath(context.AvatarUri.Guid)}/{context.AvatarUri.Guid}.glb";
+                var avatarAsset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                context.Data = Object.Instantiate(avatarAsset);
+            }
+#endif
+            var oldInstance = GameObject.Find(context.AvatarUri.Guid);
+            if (oldInstance)
+            {
+                Object.DestroyImmediate(oldInstance);
+            }
+
+            ((Object) context.Data).name = context.AvatarUri.Guid;
+
+            return context;
+        }
 
         public void ProcessAvatar(GameObject avatar, AvatarMetadata avatarMetadata)
         {
@@ -30,18 +72,16 @@ namespace ReadyPlayerMe
             {
                 var message = $"Avatar postprocess failed. {e.Message}";
                 SDKLogger.Log(TAG, message);
-                OnFailed?.Invoke(FailureType.AvatarProcessError, message);
+                throw new CustomException(FailureType.AvatarProcessError, message);
             }
         }
+
 
         #region Setup Armature and Animations
 
         // Animation avatars
         private const string MASCULINE_ANIMATION_AVATAR_NAME = "AnimationAvatars/MasculineAnimationAvatar";
         private const string FEMININE_ANIMATION_AVATAR_NAME = "AnimationAvatars/FeminineAnimationAvatar";
-
-        // Animation controller
-        private const string ANIMATOR_CONTROLLER_NAME = "Avatar Animator";
 
         // Bone names
         private const string BONE_HIPS = "Hips";
@@ -56,7 +96,7 @@ namespace ReadyPlayerMe
             armature.name = BONE_ARMATURE;
             armature.transform.parent = avatar.transform;
 
-            Transform hips = avatar.transform.Find(BONE_HIPS);
+            var hips = avatar.transform.Find(BONE_HIPS);
             hips.parent = armature.transform;
         }
 
@@ -68,10 +108,7 @@ namespace ReadyPlayerMe
                 ? MASCULINE_ANIMATION_AVATAR_NAME
                 : FEMININE_ANIMATION_AVATAR_NAME;
             var animationAvatar = Resources.Load<Avatar>(animationAvatarSource);
-            var animatorController = Resources.Load<RuntimeAnimatorController>(ANIMATOR_CONTROLLER_NAME);
-
             var animator = avatar.AddComponent<Animator>();
-            animator.runtimeAnimatorController = animatorController;
             animator.avatar = animationAvatar;
             animator.applyRootMotion = true;
         }
@@ -105,9 +142,9 @@ namespace ReadyPlayerMe
         /// </summary>
         private void RenameChildMeshes(GameObject avatar)
         {
-            SkinnedMeshRenderer[] renderers = avatar.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var renderers = avatar.GetComponentsInChildren<SkinnedMeshRenderer>();
 
-            foreach (SkinnedMeshRenderer renderer in renderers)
+            foreach (var renderer in renderers)
             {
                 var assetName = renderer.name.Replace(PREFIX, "");
 

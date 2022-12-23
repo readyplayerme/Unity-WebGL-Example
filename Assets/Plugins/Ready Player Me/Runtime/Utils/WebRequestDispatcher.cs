@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace ReadyPlayerMe
 {
-
     public class WebRequestDispatcher
     {
         private const int TIMEOUT = 20;
         private const string LAST_MODIFIED = "Last-Modified";
+        private const string NO_INTERNET_CONNECTION = "No internet connection.";
+        private const string CLOUDFRONT_IDENTIFIER = "cloudfront";
 
-        public Action<float> OnProgressChanged;
-        public Action<Response> OnCompleted;
-        public Action<string> OnFailed;
+        public Action<float> ProgressChanged;
 
         private bool HasInternetConnection => Application.internetReachability != NetworkReachability.NotReachable;
 
-        public IEnumerator Dispatch(string url, byte[] bytes)
+        public async Task<string> Dispatch(string url, byte[] bytes, CancellationToken token)
         {
             if (HasInternetConnection)
             {
@@ -28,112 +27,152 @@ namespace ReadyPlayerMe
                     request.method = "POST";
                     request.SetRequestHeader("Content-Type", "application/json");
 
-                    yield return request.SendWebRequest();
+                    var asyncOperation = request.SendWebRequest();
+                    while (!asyncOperation.isDone && !token.IsCancellationRequested)
+                    {
+                        await Task.Yield();
+                        ProgressChanged?.Invoke(request.downloadProgress);
+                    }
+
+                    token.ThrowCustomExceptionIfCancellationRequested();
+
+                    if (request.isHttpError || request.isNetworkError)
+                    {
+                        throw new CustomException(FailureType.DownloadError, request.error);
+                    }
+
+                    return request.downloadHandler.text;
                 }
             }
-            else
-            {
-                OnFailed?.Invoke("No internet connection.");
-            }
+
+            throw new CustomException(FailureType.NoInternetConnection, NO_INTERNET_CONNECTION);
         }
 
-        public IEnumerator Dispatch(string url, List<IMultipartFormSection> form)
-        {
-            if (HasInternetConnection)
-            {
-                using (var request = UnityWebRequest.Post(url, form))
-                {
-                    yield return request.SendWebRequest();
-                }
-            }
-            else
-            {
-                OnFailed?.Invoke("No internet connection.");
-            }
-        }
-
-        public IEnumerator DownloadIntoMemory(string url)
+        public async Task<Response> DownloadIntoMemory(string url, CancellationToken token, int timeout = TIMEOUT)
         {
             if (HasInternetConnection)
             {
                 using (var request = new UnityWebRequest(url))
                 {
-                    request.timeout = TIMEOUT;
+                    request.timeout = timeout;
                     request.downloadHandler = new DownloadHandlerBuffer();
                     request.method = UnityWebRequest.kHttpVerbGET;
 
-                    var op = request.SendWebRequest();
-
-                    while (!op.isDone)
+                    if (!url.Contains(CLOUDFRONT_IDENTIFIER)) // Required to prevent CORS errors in WebGL
                     {
-                        yield return null;
-                        OnProgressChanged?.Invoke(request.downloadProgress);
+                        foreach (var header in CommonHeaders.GetRequestHeaders())
+                        {
+                            request.SetRequestHeader(header.Key, header.Value);
+                        }
                     }
+
+                    var asyncOperation = request.SendWebRequest();
+                    while (!asyncOperation.isDone && !token.IsCancellationRequested)
+                    {
+                        await Task.Yield();
+                        ProgressChanged?.Invoke(request.downloadProgress);
+                    }
+
+                    token.ThrowCustomExceptionIfCancellationRequested();
 
                     if (request.downloadedBytes == 0 || request.isHttpError || request.isNetworkError)
                     {
-                        OnFailed?.Invoke(request.error);
+                        throw new CustomException(FailureType.DownloadError, request.error);
                     }
-                    else
-                    {
-                        OnCompleted?.Invoke(new Response(
-                            request.downloadHandler.text,
-                            request.downloadHandler.data,
-                            request.GetResponseHeader(LAST_MODIFIED)));
-                    }
+
+                    return new Response(
+                        request.downloadHandler.text,
+                        request.downloadHandler.data,
+                        request.GetResponseHeader(LAST_MODIFIED));
                 }
             }
-            else
-            {
-                OnFailed?.Invoke("No internet connection.");
-            }
+
+            throw new CustomException(FailureType.NoInternetConnection, NO_INTERNET_CONNECTION);
         }
 
-        public IEnumerator DownloadIntoFile(string url, string path)
+        public async Task<Response> DownloadIntoFile(string url, string path, CancellationToken token, int timeout = TIMEOUT)
         {
             if (HasInternetConnection)
             {
                 using (var request = new UnityWebRequest(url))
                 {
-                    request.timeout = TIMEOUT;
-                    request.downloadHandler = new DownloadHandlerFile(path);
+                    request.timeout = timeout;
+                    var downloadHandler = new DownloadHandlerFile(path);
+                    downloadHandler.removeFileOnAbort = true;
+                    request.downloadHandler = downloadHandler;
 
-                    var op = request.SendWebRequest();
-
-                    while (!op.isDone)
+                    if (!url.Contains(CLOUDFRONT_IDENTIFIER)) // Required to prevent CORS errors in WebGL
                     {
-                        yield return null;
-                        OnProgressChanged?.Invoke(request.downloadProgress);
+                        foreach (var header in CommonHeaders.GetRequestHeaders())
+                        {
+                            request.SetRequestHeader(header.Key, header.Value);
+                        }
                     }
+
+                    var asyncOperation = request.SendWebRequest();
+                    while (!asyncOperation.isDone && !token.IsCancellationRequested)
+                    {
+                        await Task.Yield();
+                        ProgressChanged?.Invoke(request.downloadProgress);
+                    }
+
+                    token.ThrowCustomExceptionIfCancellationRequested();
 
                     if (request.downloadedBytes == 0 || request.isHttpError || request.isNetworkError)
                     {
-                        OnFailed?.Invoke(request.error);
+                        throw new CustomException(FailureType.DownloadError, request.error);
                     }
-                    else
+
+                    var byteLength = (long) request.downloadedBytes;
+                    var info = new FileInfo(path);
+
+                    while (info.Length != byteLength)
                     {
-                        var byteLength = (long) request.downloadedBytes;
-                        var info = new FileInfo(path);
+                        info.Refresh();
+                        await Task.Yield();
+                    }
 
-                        while (info.Length != byteLength)
-                        {
-                            info.Refresh();
-                            yield return null;
-                        }
+                    // Reading file since can't access raw bytes from downloadHandler
+                    var bytes = File.ReadAllBytes(path);
 
-                        // Reading file since can't access raw bytes from downloadHandler
-                        var bytes = File.ReadAllBytes(path);
-                        OnCompleted?.Invoke(new Response(
-                            string.Empty,
-                            bytes,
-                            request.GetResponseHeader(LAST_MODIFIED)));
+                    return new Response(
+                        string.Empty,
+                        bytes,
+                        request.GetResponseHeader(LAST_MODIFIED));
+                }
+            }
+
+            throw new CustomException(FailureType.NoInternetConnection, NO_INTERNET_CONNECTION);
+        }
+
+        public async Task<Texture2D> DownloadTexture(string url, CancellationToken token)
+        {
+            if (HasInternetConnection)
+            {
+                using (var request = UnityWebRequestTexture.GetTexture(url))
+                {
+                    var asyncOperation = request.SendWebRequest();
+                    while (!asyncOperation.isDone && !token.IsCancellationRequested)
+                    {
+                        await Task.Yield();
+                        ProgressChanged?.Invoke(request.downloadProgress);
+                    }
+
+                    token.ThrowCustomExceptionIfCancellationRequested();
+
+                    if (request.isNetworkError || request.isHttpError)
+                    {
+                        throw new CustomException(FailureType.DownloadError, request.error);
+                    }
+
+                    if (request.downloadHandler is DownloadHandlerTexture downloadHandlerTexture)
+                    {
+                        return downloadHandlerTexture.texture;
                     }
                 }
             }
-            else
-            {
-                OnFailed?.Invoke("No internet connection.");
-            }
+
+            throw new CustomException(FailureType.NoInternetConnection, NO_INTERNET_CONNECTION);
         }
     }
 }

@@ -479,7 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b7a236cf0534ae682c6aaa43737760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://d1a370nemizbjq.cloudfront.net/9bcc6840-8b8b-420d-a9d8-bc9c275fce8f.glb
+  url: https://api.readyplayer.me/v1/avatars/62ea68528a6d28ec134990af.glb
   scene: 2
   spriteRenderer: {fileID: 1704154899}
   loadingPanel: {fileID: 466104546}

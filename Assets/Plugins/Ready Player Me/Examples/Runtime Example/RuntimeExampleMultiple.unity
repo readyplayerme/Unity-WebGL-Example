@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465791, g: 0.49641317, b: 0.57481784, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641186, b: 0.5748162, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1787,13 +1787,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc96293c4d89eff4fa7b1ad7dc22deb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  avatarConfig: {fileID: 11400000, guid: 784b4c053ccfc4380ae9eb3ba1c08d15, type: 2}
   avatarUrls:
-  - https://d1a370nemizbjq.cloudfront.net/587bd822-eaf7-48aa-9f39-206cef1330d3.glb
-  - https://d1a370nemizbjq.cloudfront.net/ab1f14de-ce56-412a-b29b-54b78408e4db.glb
-  - https://d1a370nemizbjq.cloudfront.net/73932250-1474-4640-b420-695078e4a8ad.glb
-  - https://d1a370nemizbjq.cloudfront.net/7120bd55-d654-4df9-b2ac-73962beb0e7c.glb
-  - https://d1a370nemizbjq.cloudfront.net/de97f035-5827-4a3e-aa3a-e6da8c9dd34b.glb
-  - https://d1a370nemizbjq.cloudfront.net/6afbe2e6-03f8-4635-ae1e-ae12099cf528.glb
+  - https://api.readyplayer.me/v1/avatars/632d65e99b4c6a4352a9b8db.glb
+  - https://api.readyplayer.me/v1/avatars/632d678974be0f698c0cf4cc.glb
+  - https://api.readyplayer.me/v1/avatars/632d68079b4c6a4352a9bb29.glb
+  - https://api.readyplayer.me/v1/avatars/632d68559b4c6a4352a9bb75.glb
 --- !u!114 &2024074594
 MonoBehaviour:
   m_ObjectHideFlags: 0

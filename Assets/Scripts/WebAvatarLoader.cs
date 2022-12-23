@@ -9,8 +9,11 @@ public class WebAvatarLoader : MonoBehaviour
 
     private void Start()
     {
+#if !UNITY_EDITOR && UNITY_WEBGL
         PartnerSO partner = Resources.Load<PartnerSO>("Partner");
+        
         WebInterface.SetupRpmFrame(partner.Subdomain);
+#endif
     }
     
     public void OnWebViewAvatarGenerated(string generatedUrl)

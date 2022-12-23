@@ -24,7 +24,8 @@ public class WebViewPostProcessBuild : IPostGenerateGradleAndroidProject
             .SetUsesCleartextTraffic(true)
             .UseCamera()
             .UseMicrophone()
-            .UseGallery();
+            .UseGallery()
+            .AllowBackup();
 
         androidManifest.Save();
     }
@@ -61,6 +62,7 @@ internal class AndroidXmlDocument : XmlDocument {
     private string manifestPath;
     protected XmlNamespaceManager namespaceManager;
     public readonly string AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
+    public readonly string ToolsXmlNamespace = "http://schemas.android.com/tools";
 
     public AndroidXmlDocument(string path) {
         manifestPath = path;
@@ -70,6 +72,7 @@ internal class AndroidXmlDocument : XmlDocument {
         }
         namespaceManager = new XmlNamespaceManager(NameTable);
         namespaceManager.AddNamespace("android", AndroidXmlNamespace);
+        namespaceManager.AddNamespace("tools", ToolsXmlNamespace);
     }
 
     public string Save() {
@@ -95,6 +98,12 @@ internal class AndroidManifest : AndroidXmlDocument
 
     private XmlAttribute CreateAndroidAttribute(string key, string value) {
         XmlAttribute attr = CreateAttribute("android", key, AndroidXmlNamespace);
+        attr.Value = value;
+        return attr;
+    }
+    
+    private XmlAttribute CreateToolsAttribute(string key, string value) {
+        XmlAttribute attr = CreateAttribute("tools", key, ToolsXmlNamespace);
         attr.Value = value;
         return attr;
     }
@@ -140,7 +149,17 @@ internal class AndroidManifest : AndroidXmlDocument
         }
     }
 
+    internal AndroidManifest AllowBackup()
+    {
+        XmlNode elem = SelectSingleNode("/manifest/application");
+        elem.Attributes.Append(CreateAndroidAttribute("allowBackup", "false"));
+        elem.Attributes.Append(CreateToolsAttribute("replace", "android:allowBackup"));
+
+        return this;
+    }
+    
     internal void UseFeature(string feature) => UpdateNode(UsesFeature, feature);
+    
     internal void UsePermission(string permission) => UpdateNode(UsesPermission, permission);
 
     private static XmlNode ActivityWithLaunchIntent = null;

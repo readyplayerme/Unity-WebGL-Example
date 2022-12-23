@@ -1,47 +1,58 @@
 using System;
-using System.Collections;
-using System.Text.RegularExpressions;
-using UnityEngine.Networking;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ReadyPlayerMe
 {
-    public class UrlProcessor
+    public class UrlProcessor : IOperation<AvatarContext>
     {
         private const string TAG = nameof(UrlProcessor);
 
-        private const string SHORT_CODE_REGEX = "^[A-Z0-9]{6}$";
-        private const string SHORT_CODE_URL_REGEX = "^(https://readyplayer.me/api/avatar/)[A-Z0-9]{6}$";
-        private const string SHORT_CODE_BASE_URL = "https://readyplayer.me/api/avatar";
+        private const string SHORT_CODE_BASE_URL = "https://api.readyplayer.me/v1/avatars";
         private const string GLB_EXTENSION = ".glb";
         private const string JSON_EXTENSION = ".json";
 
-        public Action<FailureType, string> OnFailed;
-        public Action<AvatarUri> OnCompleted;
+        public int Timeout { get; set; }
+        public Action<float> ProgressChanged { get; set; }
 
-        public bool SaveInProjectFolder { get; set; }
+        private bool SaveInProjectFolder { get; set; }
 
-        public void Create(string url)
+        public async Task<AvatarContext> Execute(AvatarContext context, CancellationToken token)
         {
+            if (string.IsNullOrEmpty(context.Url))
+            {
+                throw Fail(FailureType.UrlProcessError, "Url string is null");
+            }
 
-            if (Regex.Match(url, SHORT_CODE_REGEX).Length > 0)
+            SaveInProjectFolder = context.SaveInProjectFolder;
+            try
             {
-                GetUrlFromShortCode(url).Run();
+                context.AvatarUri = await Create(context.Url, context.ParametersHash, token);
             }
-            else if (Regex.Match(url, SHORT_CODE_URL_REGEX).Length > 0)
+            catch (Exception e)
             {
-                GetUrlFromShortCode(url.Substring(url.Length - 6)).Run();
+                throw Fail(FailureType.UrlProcessError, $"Invalid avatar URL or short code.{e.Message}");
             }
-            else if (url.ToLower().EndsWith(GLB_EXTENSION))
-            {
-                CreateFromUrl(url);
-            }
-            else
-            {
-                Fail(FailureType.UrlProcessError, "Invalid avatar URL or short code.");
-            }
+
+            ProgressChanged?.Invoke(1);
+            return context;
         }
 
-        private void CreateFromUrl(string url)
+        public async Task<AvatarUri> Create(string url, string paramsHash, CancellationToken token = new CancellationToken())
+        {
+            var fractions = url.Split('?');
+            url = fractions[0];
+            var avatarApiParameters = fractions.Length > 1 ? $"?{fractions[1]}" : "";
+            if (url.ToLower().EndsWith(GLB_EXTENSION))
+            {
+                return CreateFromUrl(url, paramsHash, avatarApiParameters).Result;
+            }
+
+            var urlFromShortCode = await GetUrlFromShortCode(url);
+            return CreateFromUrl(urlFromShortCode, paramsHash, avatarApiParameters).Result;
+        }
+
+        private Task<AvatarUri> CreateFromUrl(string url, string paramsHash, string avatarApiParameters)
         {
             try
             {
@@ -50,44 +61,35 @@ namespace ReadyPlayerMe
                 var fractions = url.Split('/', '.');
 
                 avatarUri.Guid = fractions[fractions.Length - 2];
-                var fileName = $"{DirectoryUtility.GetAvatarSaveDirectory(avatarUri.Guid, SaveInProjectFolder)}/{avatarUri.Guid}";
-                avatarUri.ModelUrl = url;
+                var fileName = $"{DirectoryUtility.GetAvatarSaveDirectory(avatarUri.Guid, SaveInProjectFolder, paramsHash)}/{avatarUri.Guid}";
+                avatarUri.ModelUrl = $"{url}{avatarApiParameters}";
                 avatarUri.LocalModelPath = $"{fileName}{GLB_EXTENSION}";
-                avatarUri.MetadataUrl = url.Replace(GLB_EXTENSION, JSON_EXTENSION);
+
+                url = url.Remove(url.Length - GLB_EXTENSION.Length, GLB_EXTENSION.Length);
+                avatarUri.MetadataUrl = $"{url}{JSON_EXTENSION}";
+                fileName = $"{DirectoryUtility.GetAvatarSaveDirectory(avatarUri.Guid, SaveInProjectFolder)}/{avatarUri.Guid}";
                 avatarUri.LocalMetadataPath = $"{fileName}{JSON_EXTENSION}";
 
                 SDKLogger.Log(TAG, "Processing completed.");
-                OnCompleted?.Invoke(avatarUri);
+                return Task.FromResult(avatarUri);
             }
             catch (Exception e)
             {
-                Fail(FailureType.UrlProcessError, $"Invalid avatar URL. {e.Message}");
+                throw Fail(FailureType.UrlProcessError, $"Invalid avatar URL. {e.Message}");
             }
         }
 
-        // TODO Find better approach for getting the correct URL and move to WebRequestDispatcher. 
-        private IEnumerator GetUrlFromShortCode(string shortCode)
+        private Task<string> GetUrlFromShortCode(string shortCode)
         {
-            SDKLogger.Log(TAG, "Getting URL from short code");
-            using (var request = UnityWebRequest.Get($"{SHORT_CODE_BASE_URL}/{shortCode}"))
-            {
-                yield return request.SendWebRequest();
-
-                if (request.isHttpError || request.isNetworkError)
-                {
-                    Fail(FailureType.ShortCodeError, $"Invalid avatar short code. {request.error}");
-                }
-                else
-                {
-                    CreateFromUrl(request.url);
-                }
-            }
+            SDKLogger.Log(TAG, "TEST: Getting URL from shortcode");
+            var url = $"{SHORT_CODE_BASE_URL}/{shortCode}.glb";
+            return Task.FromResult(url);
         }
 
-        private void Fail(FailureType failureType, string message)
+        private Exception Fail(FailureType failureType, string message)
         {
             SDKLogger.Log(TAG, message);
-            OnFailed?.Invoke(failureType, message);
+            throw new CustomException(failureType, message);
         }
     }
 }

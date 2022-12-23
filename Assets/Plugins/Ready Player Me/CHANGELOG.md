@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.13.1] - 2022.11.09
+
+### Fixed
+- Url processor handling for shortcodes to support url redirects
+- Fix for CORS related issued with Cloudfront URLs in WebGL
+- LOD Example slider fix
+
+## [1.13.0] - 2022.10.26
+
+### Added
+- LOD example scene and script added to Examples folder of Ready Player Me plugin
+
+### Fixed
+- WebView android manifest will now have allowBackup:false to help fix WebGLES2 issues in older devices.
+
+## [1.12.0] - 2022.10.06
+
+### Added
+- Avatar API support in Avatar Loader, now users can create configurable avatars.
+- Avatar Configuration Scriptable Object for requesting avatars with different quality.
+- Global avatar configuration added to Settings window
+- Avatar Caching support for avatars created with different quality configurations.
+- Editor options and scripting API for Avatar Caching, Cache Cleaning and Avatar Config. 
+- Timeout variable in AvatarLoader for setting timeout of all web requests.
+- Shifted to using async/await instead of coroutines.
+- Avatar Loader design shifted from a chain of methods to array of executable operations.
+- Avatar loading operations now can be cancelled.
+- Example scene for Avatar Config usage for showing multiple quality avatar loading.
+
+### Updated
+- Short code handling logic updated for Avatar API.
+- Visual updates for Avatar Loader and Settings windows.
+- Avatar Caching turned off by default.
+- Avatars are now loaded without a default Animation Controller.
+- Avatar URLs in example scenes are updated.
+
+### Fixed
+- Avatar position flicker on load issue is fixed.
+- WebView cache cleanup issue is fixed. KeepSessionAlive usage for restarting avatar loading.
+- Half-body avatar loading error due to no Animator component issue is fixed.
+- WebView white background flicker issue is fixed.
+
 ## [1.11.0] - 2022.08.03
 
 ### Added
@@ -14,20 +56,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Loaded avatars from the Avatar Loader Editor Window are now imported as prefabs.
 - Example on how to load multiple avatars efficiently added to Runtime Examples folder.
 - A new runtime debug panel has been added to the Runtime Example.
+- Support for avatar caching at runtime on builds using persistentDataPath
 
 ### Updated
 - The UI of the Avatar Loader is now cleaner and provides you with the most important functionality.
 - The WebView Partner Editor has been renamed to a more general name Settings.
 
 ### Fixed
-- VoiceHandler blend shape weight fix. 
+- VoiceHandler blend shape weight fix.
 - Avatar Loader and Settings Dialog style issues on first launch, in Unity 2020 and 2021 is fixed.
 - Render pipeline error in Unity 2022 is fixed.
 - Editor Coroutine runner duplicated when switching from play mode to edit mode fixed.
-
-### Added
-
--   Support for avatar caching at runtime on builds using persistentDataPath
 
 ## [1.10.0] - 2022.05.24
 
@@ -64,7 +103,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
--   Animation Target FBX files are removed, animations and animation avatars are mvoed into separete folders
+-   Animation Target FBX files are removed, animations and animation avatars are moved into separate folders
 -   MipMaps are disabled for avatar textures
 -   Removed "Wolf3D" from namespace and component names and filenames
 -   Renamed "Wolf3D Ready Player Me Avatar SDK" folder to "Ready Player Me"
@@ -92,7 +131,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
--   Former animation source FBX fiels are removed
+-   Former animation source FBX fields are removed
 
 ## [1.7.1] - 2021.12.20
 
@@ -123,7 +162,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
--   OnAvatarImported callback to avatar loader, to receive the gameobject before it is processed.
+-   OnAvatarImported callback to avatar loader, to receive the game object before it is processed.
 
 ### Fixed
 
@@ -212,8 +251,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
--   Eye blendshape movement for atlassed avatars
--   mouth blendshape movement for atlassed avatars
+-   Eye blend shape movement for texture atlased avatars
+-   mouth blend shape movement for texture atlased avatars
 
 ## [1.4.0] - 2021.05.10
 
@@ -225,7 +264,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Animation folder name fix for Asset Importer
 -   Unity 2018 compability fixes
--   MountOpen blendshape index issue fix
+-   MountOpen blend shape index issue fix
 
 ## [1.3.1] - 2021.04.21
 
@@ -246,8 +285,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
--   Updated GLTFMesh.cs, changing blendshape range to be from 0-100
--   Updated EyeAnimationHandler and VoiceHandler to work with the new blendshape range
+-   Updated GLTFMesh.cs, changing blend shape range to be from 0-100
+-   Updated EyeAnimationHandler and VoiceHandler to work with the new blend shape range
 -   GLTFUtility optimizations for faster loading
 
 ## [1.2.0] - 2021.02.08
@@ -255,7 +294,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 -   Editor window for RPM SDK for ease of use.
--   Blendshape blinking for EyeMovementHandler.cs
+-   Blend shape blinking for EyeMovementHandler.cs
 
 ### Changed
 
@@ -278,7 +317,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
--   Fullbody avatar updates
+-   Full-body avatar updates
 
 ## [1.0.0] - 2020.10.22
 
@@ -307,7 +346,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
--   Fullbody avatar support.
+-   Full-body avatar support.
 -   Male and female animation targets.
 -   Example animation and animators.
 
@@ -327,7 +366,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
--   Blendshape normals issue fixed in GLTFUtility.
+-   Blend shape normals issue fixed in GLTFUtility.
 
 ## [0.3.0] - 2020.07.30
 

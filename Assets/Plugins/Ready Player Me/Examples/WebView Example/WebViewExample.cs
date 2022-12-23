@@ -77,6 +77,7 @@ namespace ReadyPlayerMe
         private void Completed(object sender, CompletionEventArgs args)
         {
             avatar = args.Avatar;
+            AvatarAnimatorHelper.SetupAnimator(args.Metadata.BodyType, avatar);
             loadingLabel.SetActive(false);
             displayButton.gameObject.SetActive(true);
 

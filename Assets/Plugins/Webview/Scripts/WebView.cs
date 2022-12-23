@@ -38,10 +38,10 @@ namespace ReadyPlayerMe
             }
             else
             {
-#if UNITY_EDITOR || !(UNITY_ANDROID || UNITY_IOS)
-                messagePanel.SetMessage(MessagePanel.MessageType.NotSupported);
-                messagePanel.SetVisible(true);
-#else
+                #if UNITY_EDITOR || !(UNITY_ANDROID || UNITY_IOS)
+                    messagePanel.SetMessage(MessagePanel.MessageType.NotSupported);
+                    messagePanel.SetVisible(true);
+                #else
                     if (webViewObject == null)
                     {
                         messagePanel.SetMessage(MessagePanel.MessageType.Loading);
@@ -61,10 +61,10 @@ namespace ReadyPlayerMe
                     webViewObject.Init(options);
                     
                     PartnerSO partner = Resources.Load<PartnerSO>("Partner");
-                    string url = partner.GetUrl();
+                    string url = partner.GetUrl(KeepSessionAlive);
                     webViewObject.LoadURL(url);
                     webViewObject.IsVisible = true;
-#endif
+                #endif
             }
 
             SetScreenPadding(left, top, right, bottom);
@@ -115,9 +115,11 @@ namespace ReadyPlayerMe
                     {
                         webViewObject.IsVisible = false;
                         OnAvatarCreated?.Invoke(avatarUrl);
+
                         if (!KeepSessionAlive)
                         {
-                            ClearAvatarData();
+                            Loaded = false;
+                            webViewObject.Reload();
                         }
                     }
                 }
@@ -126,18 +128,6 @@ namespace ReadyPlayerMe
             {
                 Debug.Log($"--- Message is not JSON: {message}\nError Message: {e.Message}");
             }
-        }
-
-        /// <summary>
-        ///     Clear avatar data from the WebView local storage and reload RPM page for a new avatar creation.
-        /// </summary>
-        public void ClearAvatarData()
-        {
-            webViewObject.EvaluateJS(@"
-                window.localStorage.removeItem('persist:user');
-            ");
-            webViewObject.Reload();
-            Loaded = false;
         }
 
         private void OnLoaded(string message)
@@ -212,14 +202,6 @@ namespace ReadyPlayerMe
                 var size = new Vector3(rect.width - (left + right), rect.height - (bottom + top));
 
                 Gizmos.DrawWireCube(center, size);
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (!KeepSessionAlive)
-            {
-                ClearAvatarData();
             }
         }
     }

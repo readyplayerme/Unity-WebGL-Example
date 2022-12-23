@@ -13,17 +13,17 @@ namespace ReadyPlayerMe
             "https://docs.readyplayer.me/overview/frequently-asked-questions/game-engine-faq";
         private const string DISCORD_URL = "https://bit.ly/UnitySDKDiscord";
 
-        private const string RPM_SETTINGS = "rpm settings";
-
         protected GUIStyle HeadingStyle;
         protected GUIStyle DescriptionStyle;
 
         private GUIStyle webButtonStyle;
 
-        private readonly GUILayoutOption windowWidth = GUILayout.Width(512);
+        private readonly GUILayoutOption windowWidth = GUILayout.Width(460);
+        protected readonly float ButtonHeight = 30f;
         private Banner banner;
 
         private string editorWindowName;
+        private bool windowResized;
 
         private void LoadAssets()
         {
@@ -39,9 +39,12 @@ namespace ReadyPlayerMe
                     fontSize = 14,
                     richText = true,
                     fontStyle = FontStyle.Bold,
-                    margin = new RectOffset(5, 0, 0, 0)
+                    margin = new RectOffset(5, 0, 0, 8),
+                    normal =
+                    {
+                        textColor = Color.white
+                    }
                 };
-                HeadingStyle.normal.textColor = Color.white;
             }
 
             if (DescriptionStyle == null)
@@ -60,7 +63,8 @@ namespace ReadyPlayerMe
             {
                 webButtonStyle = new GUIStyle(GUI.skin.button);
                 webButtonStyle.fontSize = 12;
-                webButtonStyle.fixedWidth = 166;
+                webButtonStyle.fixedWidth = 149;
+                webButtonStyle.fixedHeight = ButtonHeight;
                 webButtonStyle.padding = new RectOffset(5, 5, 5, 5);
             }
         }
@@ -70,7 +74,7 @@ namespace ReadyPlayerMe
             editorWindowName = editorName;
         }
 
-        protected void DrawContent(Action content)
+        protected void DrawContent(Action content, bool useBanner = true)
         {
             LoadAssets();
 
@@ -79,24 +83,24 @@ namespace ReadyPlayerMe
                 GUILayout.FlexibleSpace();
                 Vertical(() =>
                 {
-                    banner.DrawBanner(position.size.x);
+                    banner.DrawBanner(position);
                     content?.Invoke();
-                    DrawExternalLinks();
+                    if (useBanner) DrawExternalLinks();
                 }, windowWidth);
                 GUILayout.FlexibleSpace();
             });
+
+            SetWindowSize();
         }
 
         private void DrawExternalLinks()
         {
             Vertical(() =>
             {
-                GUILayout.Space(10);
                 GUILayout.Label(SUPPORT_HEADING, HeadingStyle);
-                GUILayout.Space(10);
 
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
+                GUI.color = Color.white;
                 if (GUILayout.Button("Documentation", webButtonStyle))
                 {
                     AnalyticsEditorLogger.EventLogger.LogOpenDocumentation(editorWindowName);
@@ -115,10 +119,18 @@ namespace ReadyPlayerMe
                     Application.OpenURL(DISCORD_URL);
                 }
 
-                GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
-
             }, true);
+        }
+
+        private void SetWindowSize()
+        {
+            float height = GUILayoutUtility.GetLastRect().height;
+            if (!windowResized && height > 1)
+            {
+                minSize = maxSize = new Vector2(460, height);
+                windowResized = true;
+            }
         }
 
         #region Horizontal and Vertical Layouts
@@ -130,7 +142,7 @@ namespace ReadyPlayerMe
             EditorGUILayout.EndVertical();
         }
 
-        private void Vertical(Action content, params GUILayoutOption[] options)
+        protected void Vertical(Action content, params GUILayoutOption[] options)
         {
             EditorGUILayout.BeginVertical(options);
             content?.Invoke();
@@ -144,7 +156,7 @@ namespace ReadyPlayerMe
             EditorGUILayout.EndHorizontal();
         }
 
-        public void Horizontal(Action content, params GUILayoutOption[] options)
+        protected void Horizontal(Action content, params GUILayoutOption[] options)
         {
             EditorGUILayout.BeginHorizontal(options);
             content?.Invoke();
