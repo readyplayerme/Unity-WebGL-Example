@@ -1,4 +1,6 @@
-using ReadyPlayerMe;
+using ReadyPlayerMe.AvatarLoader;
+using ReadyPlayerMe.Core;
+using ReadyPlayerMe.Core.Data;
 using UnityEngine;
 
 public class WebAvatarLoader : MonoBehaviour
@@ -10,7 +12,7 @@ public class WebAvatarLoader : MonoBehaviour
     private void Start()
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
-        PartnerSO partner = Resources.Load<PartnerSO>("Partner");
+        CoreSettings partner = Resources.Load<CoreSettings>("CoreSettings");
         
         WebInterface.SetupRpmFrame(partner.Subdomain);
 #endif
@@ -18,7 +20,7 @@ public class WebAvatarLoader : MonoBehaviour
     
     public void OnWebViewAvatarGenerated(string generatedUrl)
     {
-        var avatarLoader = new AvatarLoader();
+        var avatarLoader = new AvatarObjectLoader();
         avatarUrl = generatedUrl;
         avatarLoader.OnCompleted += OnAvatarLoadCompleted;
         avatarLoader.OnFailed += OnAvatarLoadFailed;
