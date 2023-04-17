@@ -31,6 +31,10 @@ public class WebAvatarLoader : MonoBehaviour
     {
         if (avatar) Destroy(avatar);
         avatar = args.Avatar;
+        if (args.Metadata.BodyType == BodyType.HalfBody)
+        {
+            avatar.transform.position = new Vector3(0, 1, 0);
+        }
     }
 
     private void OnAvatarLoadFailed(object sender, FailureEventArgs args)
