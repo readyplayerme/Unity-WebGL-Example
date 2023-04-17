@@ -10,7 +10,7 @@ mergeInto(LibraryManager.library, {
         rpmContainer.style.display = "none";
     },
         
-    SetupRpm: function (partner){
-        setupRpmFrame(UTF8ToString(partner));
+    SetupRpm: function (url, targetGameObjectName){
+        setupRpmFrame(UTF8ToString(url), UTF8ToString(targetGameObjectName));
     },
 });
