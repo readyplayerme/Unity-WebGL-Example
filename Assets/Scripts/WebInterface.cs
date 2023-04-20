@@ -13,6 +13,9 @@ public static class WebInterface
     
     [DllImport("__Internal")]
     private static extern void HideReadyPlayerMeFrame();
+    
+    [DllImport("__Internal")]
+    private static extern void ReloadUrl();
 #endif
     public static void SetIFrameVisibility(bool isVisible)
     {
@@ -31,5 +34,10 @@ public static class WebInterface
 #if !UNITY_EDITOR && UNITY_WEBGL
         SetupRpm(url,  targetGameObjectName);
 #endif
+    }
+
+    public static void ReloadUrl(string url)
+    {
+        
     }
 }

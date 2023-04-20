@@ -5,7 +5,6 @@ rpmHideButton.onclick = function () {
     rpmContainer.style.display = "none";
 };
 
-
 function setupRpmFrame(url, targetGameObjectName) {
     const message = "message";
     const rpmFilter = "readyplayerme";
@@ -13,6 +12,8 @@ function setupRpmFrame(url, targetGameObjectName) {
     const receivingFunctionName = "FrameMessageReceived";
     
     rpmFrame.src = url;
+    window.removeEventListener(message, subscribe);
+    document.removeEventListener(message, subscribe);
     window.addEventListener(message, subscribe);
     document.addEventListener(message, subscribe);
     
@@ -52,6 +53,11 @@ function setupRpmFrame(url, targetGameObjectName) {
             return null;
         }
     }
+}
+
+function reloadUrl(url){
+    rpmFrame.src = url;
+    rpmFrame.reload();
 }
 
 function showRpm() {

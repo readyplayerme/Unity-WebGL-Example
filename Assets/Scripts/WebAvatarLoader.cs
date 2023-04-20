@@ -15,6 +15,7 @@ public class WebAvatarLoader : MonoBehaviour, IFrameEventListener
     private void Start()
     {
         var urlConfig = new UrlConfig();
+        urlConfig.clearCache = true;
         WebInterface.SetupRpmFrame(urlConfig.BuildUrl(), name);
     }
 
@@ -44,10 +45,33 @@ public class WebAvatarLoader : MonoBehaviour, IFrameEventListener
                 break;
             case WebViewEventNames.USER_SET:
                 Debug.Log(webMessage.eventName);
+                
+                HandleAutoLogin();
                 break;
             case WebViewEventNames.USER_AUTHORIZED:
                 Debug.Log(webMessage.eventName);
+                SetLastAuthorizedUser(webMessage.GetUserId());
                 break;
+        }
+    }
+    
+    public void SetLastAuthorizedUser(string userId)
+    {
+        Debug.Log($"USER AUTHORIZED ID = {userId}");
+        AccountLinker.SetLastUserId(userId);
+    }
+    
+    private async void HandleAutoLogin()
+    {
+        Debug.Log("Handle auto login");
+        if (AccountLinker.IsUserSet())
+        {
+            Debug.Log("PartnerName is Set requesting new token and try auto login");
+            var token = await AccountLinker.RequestNewToken("sk_0NzxsmkXab2nBtr5RC04_VZI5OfdFLDFV1uQ");
+            Debug.Log($"token = {token}");
+            var urlConfig = new UrlConfig();
+            urlConfig.clearCache = true;
+            WebInterface.SetupRpmFrame(urlConfig.BuildUrl(token), name);
         }
     }
     
