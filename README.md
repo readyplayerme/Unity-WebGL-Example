@@ -235,6 +235,79 @@ Lastly we have two functions used for handling the `AvatarObjectLoader` `OnCompl
     }
 ```
 
+# Adding to an existing WebGL Template 
+
+In some cases you may want to add the Ready Player Me iFrame to an existing WebGL template. 
+For example you have a separate plugin that requires you to use their WebGL template but you also want to be able to integrate our Web avatar creator in your application. 
+
+We created our WebGL RPMTemplate in are way that most of the code is separated and easy to move around. 
+Below we will go through the steps required to add the Ready Player Me iFrame to an existing WebGL template.
+
+1. Copy the entire ReadyPlayerMe folder from  `Assets\WebGLTemplates\RPMTemplate\TemplateData\ReadyPlayerMe` with all its contents
+2. Paste it into your target WebGL Template so the new path is like this `Assets\WebGLTemplates\YourTemplate\TemplateData\ReadyPlayerMe`
+3. Open the `index.html` file in your target WebGL Template and add the following code to the `<head>` section
+    ```html
+        <link rel="stylesheet" href="TemplateData/ReadyPlayerMe/RpmStyle.css">
+    ```
+4. Add the following code to of the `<body>` section inside the `canvas-wrap` but outside the `unity-canvas`
+    ```html
+      <div id="rpm-container">
+        <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
+        <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
+      </div>
+    ```
+5. Add the following code to the end of the `<body>` section
+    ```html
+    <script src="TemplateData/ReadyPlayerMe/RpmGlobal.js"></script> 
+    <script src="TemplateData/ReadyPlayerMe/ReadyPlayerMeFrame.js"></script>
+    ```
+If done correctly then you should now be able to build your project and see the Ready Player Me iFrame in your WebGL build. 
+
+Below is the full `index.html` file from our index.html file from our [RPMTemplate](https://github.com/readyplayerme/Unity-WebGL-Example/blob/main/Assets/WebGLTemplates/RPMTemplate/index.html) with the comments to highlight the lines you need to copy and paste. 
+
+```html
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="TemplateData/ReadyPlayerMe/RpmStyle.css"><!-- Required for RPM Web Creator -->
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  </head>
+  <body >
+  <div id="unity-container" class="unity-desktop">
+    <div id="canvas-wrap" >
+      <!-- rpm-container div and contents required for RPM Web Creator -->
+      <div id="rpm-container">
+        <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
+        <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
+      </div>
+      <!-- rpm-container div and contents required for RPM Web Creator -->
+      <canvas id="unity-canvas" ></canvas>
+    </div>
+  <div id="unity-loading-bar">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
+    </div>
+  </div>
+  <div id="unity-warning"> </div>
+  <div id="unity-footer" style="">
+    <div id="unity-webgl-logo"></div>
+    <div id="unity-fullscreen-button"></div>
+    <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
+  </div>
+</div>
+    <script src="TemplateData/ReadyPlayerMe/RpmGlobal.js"></script> <!-- Required for RPM Web Creator -->
+    <script src="TemplateData/Global.js"></script>
+    <script src="TemplateData/UnitySetup.js"></script>
+    <script src="TemplateData/ReadyPlayerMe/ReadyPlayerMeFrame.js"></script>  <!-- Required for RPM Web Creator -->
+  </body>
+</html>
+```
+
 
 ## Links
 **Ready Player Me Unity SDK**
