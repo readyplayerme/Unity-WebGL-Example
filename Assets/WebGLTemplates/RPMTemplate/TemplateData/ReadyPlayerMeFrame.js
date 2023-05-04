@@ -41,7 +41,7 @@ function setupRpmFrame(subdomain) {
 
         // Get avatar GLB URL
         if (json.eventName === "v1.avatar.exported") {
-            rpmContainer.style.display = "none";
+            hideRpm();
             // Send message to a Gameobject in the current scene
             unityGame.SendMessage(
                 "WebAvatarLoader", // Target GameObject name
@@ -72,4 +72,5 @@ function showRpm() {
 
 function hideRpm() {
     rpmContainer.style.display = "none";
+    rpmFrame.src = rpmFrame.src;
 }
