@@ -1,13 +1,11 @@
 mergeInto(LibraryManager.library, {
 
     ShowReadyPlayerMeFrame: function () {
-        var rpmContainer = document.getElementById("rpm-container");
-        rpmContainer.style.display = "block";
+        showRpm();
     },
   
     HideReadyPlayerMeFrame: function () {
-        var rpmContainer = document.getElementById("rpm-container");
-        rpmContainer.style.display = "none";
+        hideRpm();
     },
         
     SetupRpm: function (partner){

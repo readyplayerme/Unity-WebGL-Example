@@ -12,7 +12,7 @@ public class WebAvatarLoader : MonoBehaviour
     private void Start()
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
-        CoreSettings partner = Resources.Load<CoreSettings>("CoreSettings");
+        CoreSettings partner = CoreSettingsHandler.CoreSettings;
         
         WebInterface.SetupRpmFrame(partner.Subdomain);
 #endif
