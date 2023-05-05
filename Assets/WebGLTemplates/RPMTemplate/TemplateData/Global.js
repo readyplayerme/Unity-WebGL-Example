@@ -4,5 +4,5 @@ var loadingBar = document.querySelector("#unity-loading-bar");
 var progressBarFull = document.querySelector("#unity-progress-bar-full");
 var fullscreenButton = document.querySelector("#unity-fullscreen-button");
 var warningBanner = document.querySelector("#unity-warning");
-var canvasWrapper = document.getElementById("canvas-wrap");
+var canvasWrapper = document.querySelector("#canvas-wrap");
 var unityGame;
