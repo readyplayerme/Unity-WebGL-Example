@@ -6,9 +6,9 @@ This repository contains a Unity project that uses a custom WebGL template to em
 
 ![img-templates](https://user-images.githubusercontent.com/7085672/167348039-527638cb-203e-47bd-b754-6cc2123213a8.png)
 
-**RPM_2019**
+***RPM_2019***
 
-As the name suggests this template is specifically designed to work for Unity 2019 versions as the WebGL API changed in Unity 2020+.
+*We have removed the separate template for Unity 2019 as this version of Unity is no longer supported by Ready Player Me. If you are using Unity 2019 you can still copy the functionality you need from our RPMTemplate.*
 
 **RPM_Template**
 
@@ -41,20 +41,22 @@ To simplify things we will be looking at the RPM_Template as it is more relevant
 As with all WebGL templates, there is an index.html which is based on the Default template that unity provides but with some extra wrappers (`canvas-wrap`) and an `<div id="rpm-container">`  that will hold our Ready Player me iFrame as you can see below. 
 
 ```html
-    <div id="canvas-wrap">
-      <div id="rpm-container">
+<div id="canvas-wrap" >
+    <!-- rpm-container div and contents required for RPM Web Creator -->
+    <div id="rpm-container">
         <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
         <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
-      </div>
-      <canvas id="unity-canvas" width={{{WIDTH}}} height={{{HEIGHT}}}></canvas>
     </div>
+    <!-- rpm-container div and contents required for RPM Web Creator -->
+    <canvas id="unity-canvas" ></canvas>
+</div>
 ```
 
 To keep things clean we separated the javascript logic into two separate files. There is UnitySetup.js which is based off the Unity Default template, and ReadyPlayerMeFrame.js which we created to handle the setup of the iFrame that will run [readyplayer.me](https://demo.readyplayer.me/avatar). 
 
 ## Ready Player Me Frame 
 
-All the logic for setting up the Ready Player Me iFrame and subscribing to events can be found in `RPMTemplate/TemplateData/ReadyPlayerMeFrame.js`
+All the logic for setting up the Ready Player Me iFrame and subscribing to events can be found in `RPMTemplate/TemplateData/ReadyPlayerMe/ReadyPlayerMeFrame.js`
 
 ### Listen to website events
 
@@ -64,15 +66,14 @@ Before anything else, we add an event listener and bind it to a subscribe functi
     window.addEventListener("message", subscribe);
     document.addEventListener("message", subscribe);
 ```
-
-Next, we will look at the subscribe function that is called whenever we receive a message from the browser. To begin we set the src url for the iFrame
+Then we set the src url for the iFrame
 
 ```js 
     rpmFrame.src = `https://${subdomain != "" ? subdomain : "demo"}.readyplayer.me/avatar?frameApi`;
 ```
- The subdomain value is loaded from the partner scriptable object. This can be set and saved using **Ready Player Me Avatar Loader window** accessed from the top toolbar at `Ready Player Me > Avatar Loader`. See the [Web Avatar Loader](/README##Web-Avatar-Loader) section to see how the subdomain value is loaded.
+ The subdomain value is loaded from the CoreSettings scriptable object. This can be set and saved using **Ready Player Me Settings window** accessed from the top toolbar at `Ready Player Me > Settings`. See the [Web Avatar Loader](/README##Web-Avatar-Loader) section to see how the subdomain value is loaded.
 
-The next chunk of logic here is used to filter the events so that we only handle valid events as you can see by this conditional statement here. 
+The next chunk of logic is inside the subscribe function, here we filter the events so that we only handle valid events as you can see by this conditional statement here. If the event source is invalid or is not `readyplayerme` then we ignore it. 
 
 ```js 
     const json = parse(event);
@@ -135,24 +136,24 @@ To communicate from Unity to the iFrame running Ready Player me we created a Jav
 
 ```js
     mergeInto(LibraryManager.library, {
-
+    
         ShowReadyPlayerMeFrame: function () {
             var rpmContainer = document.getElementById("rpm-container");
-            rpmContainer.style.display = "block";
+            rpmContainer.style.display = "block"; //show element
         },
-
+    
         HideReadyPlayerMeFrame: function () {
             var rpmContainer = document.getElementById("rpm-container");
-            rpmContainer.style.display = "none";
+            rpmContainer.style.display = "none"; //hide element
         },
-
+    
         SetupRpm: function (partner){
             setupRpmFrame(UTF8ToString(partner));
         },
     }); 
 ```
 
-As the names suggest there are 2 for showing and hiding the Ready Player Me iFrame, and 1 for setting up the iFrame. By creating this jslib and putting it into the Plugins folder we can import these into Unity Scripts to use them as we have here in the WebInterface.cs class.
+As the names suggest there are 2 for showing and hiding the Ready Player Me iFrame, and 1 for setting up the iFrame. By creating this jslib and putting it into the Plugins folder we can import these into Unity Scripts to use them as we have here in the [WebInterface](https://github.com/readyplayerme/Unity-WebGL-Example/blob/main/Assets/Scripts/WebInterface.cs) class.
 
 ```c#
     using System.Runtime.InteropServices;
@@ -173,7 +174,7 @@ Once declared this way they can be called like regular C# functions (on WebGL bu
 
 ## Web Avatar Loader
 
-The WebAvatarLoader.cs is a simple class based on the RuntimeTest.cs example, it handles the loading of the avatar loading and setup of the Ready Player Me iFrame. 
+The [WebAvatarLoader.cs](https://github.com/readyplayerme/Unity-WebGL-Example/blob/main/Assets/Scripts/WebAvatarLoader.cs) is a simple class based on the RuntimeTest.cs example from our RPM SDK, it handles the loading of the avatar loading and setup of the Ready Player Me iFrame. 
 
 **It is important to note that this script is added to an object called `WebAvatarLoader` and it has a function called `OnWebViewAvatarGenerated`. Both the name and the function are required so that it can receive the SendMessage function from the browser as mentioned previously [here](/README#Sending-messages-to-Unity).**
 
@@ -185,52 +186,133 @@ In this script, we use the Start function to:
 ```c#
     private void Start()
     {
-        PartnerSO partner = Resources.Load<PartnerSO>("Partner");
+#if !UNITY_EDITOR && UNITY_WEBGL
+        CoreSettings partner = CoreSettingsHandler.CoreSettings;
+        
         WebInterface.SetupRpmFrame(partner.Subdomain);
-        avatarLoader = new AvatarLoader();
+#endif
     }
 ```
+
+*We wrap the logic here inside the condition `#if !UNITY_EDITOR && UNITY_WEBGL` to prevent errors in editor and compilation errors when building for a platform other than WebGL*
 
 Next, we have the `OnWebViewAvatarGenerated` function which is called from Javascript as mentioned previously. 
 
 ```c#
-    public void OnWebViewAvatarGenerated(string avatarUrl)
+    public void OnWebViewAvatarGenerated(string generatedUrl)
     {
-        LoadAvatar(avatarUrl);
+        var avatarLoader = new AvatarObjectLoader();
+        avatarUrl = generatedUrl;
+        avatarLoader.OnCompleted += OnAvatarLoadCompleted;
+        avatarLoader.OnFailed += OnAvatarLoadFailed;
+        avatarLoader.LoadAvatar(avatarUrl);
     }
  ```
 
-Here we run the `LoadAvatar` function which updates the `AvatarURL`, starts loading the avatar, and destroys the currently loaded avatar if it exists. 
+In here we create an instance of AvatarObjectLoader, set the avatarUrl to the generatedUrl from the iFrame a and trigger the the `LoadAvatar` function which updates the `AvatarURL`, starts loading the avatar, and destroys the currently loaded avatar if it exists. 
+The code itself should be quite self explanatory but we will go through it step by step.
+1. First we create an instance of the AvatarObjectLoader class
+2. Then we set the avatarUrl to the generatedUrl from the iFrame
+3. Next we subscribe to the `OnCompleted` and `OnFailed` events assigning local functions we will see later
+4. Finally we call the `LoadAvatar` function
+
+Lastly we have two functions used for handling the `AvatarObjectLoader` `OnCompleted` and `OnFailed ` callbacks. 
 
 ```c#
-    public void LoadAvatar(string avatarUrl)
+    private void OnAvatarLoadCompleted(object sender, CompletionEventArgs args)
     {
-        AvatarURL = avatarUrl;
-        avatarLoader.LoadAvatar(AvatarURL, OnAvatarImported, OnAvatarLoaded);
         if (avatar) Destroy(avatar);
+        avatar = args.Avatar;
+        if (args.Metadata.BodyType == BodyType.HalfBody)
+        {
+            avatar.transform.position = new Vector3(0, 1, 0);
+        }
+    }
+
+    private void OnAvatarLoadFailed(object sender, FailureEventArgs args)
+    {
+        SDKLogger.Log(TAG,$"Avatar Load failed with error: {args.Message}");
     }
 ```
 
-Lastly we have two functions used for handling the `avatarLoader.LoadAvatar` `OnAvatarImported` and `OnAvatarLoaded` callbacks. 
+# Adding to an existing WebGL Template 
 
-```c#
-    private void OnAvatarImported(GameObject avatar)
-    {
-        Debug.Log($"Avatar imported. [{Time.timeSinceLevelLoad:F2}]");
-    }
+In some cases you may want to add the Ready Player Me iFrame to an existing WebGL template. 
+For example you have a separate plugin that requires you to use their WebGL template but you also want to be able to integrate our Web avatar creator in your application. 
 
-    private void OnAvatarLoaded(GameObject avatar, AvatarMetaData metaData)
-    {
-        this.avatar = avatar;
-        Debug.Log($"Avatar loaded. [{Time.timeSinceLevelLoad:F2}]\n\n{metaData}");
-    }
+We created our WebGL RPMTemplate in are way that most of the code is separated and easy to move around. 
+Below we will go through the steps required to add the Ready Player Me iFrame to an existing WebGL template.
+
+1. Copy the entire ReadyPlayerMe folder from  `Assets\WebGLTemplates\RPMTemplate\TemplateData\ReadyPlayerMe` with all its contents
+2. Paste it into your target WebGL Template so the new path is like this `Assets\WebGLTemplates\YourTemplate\TemplateData\ReadyPlayerMe`
+3. Open the `index.html` file in your target WebGL Template and add the following code to the `<head>` section
+    ```html
+        <link rel="stylesheet" href="TemplateData/ReadyPlayerMe/RpmStyle.css">
+    ```
+4. Add the following code to of the `<body>` section inside the `canvas-wrap` but outside the `unity-canvas`
+    ```html
+      <div id="rpm-container">
+        <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
+        <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
+      </div>
+    ```
+5. Add the following code to the end of the `<body>` section
+    ```html
+    <script src="TemplateData/ReadyPlayerMe/RpmGlobal.js"></script> 
+    <script src="TemplateData/ReadyPlayerMe/ReadyPlayerMeFrame.js"></script>
+    ```
+If done correctly then you should now be able to build your project and see the Ready Player Me iFrame in your WebGL build. 
+
+Below is the full `index.html` file from our index.html file from our [RPMTemplate](https://github.com/readyplayerme/Unity-WebGL-Example/blob/main/Assets/WebGLTemplates/RPMTemplate/index.html) with the comments to highlight the lines you need to copy and paste. 
+
+```html
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="TemplateData/ReadyPlayerMe/RpmStyle.css"><!-- Required for RPM Web Creator -->
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  </head>
+  <body >
+  <div id="unity-container" class="unity-desktop">
+    <div id="canvas-wrap" >
+      <!-- rpm-container div and contents required for RPM Web Creator -->
+      <div id="rpm-container">
+        <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
+        <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
+      </div>
+      <!-- rpm-container div and contents required for RPM Web Creator -->
+      <canvas id="unity-canvas" ></canvas>
+    </div>
+  <div id="unity-loading-bar">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
+    </div>
+  </div>
+  <div id="unity-warning"> </div>
+  <div id="unity-footer" style="">
+    <div id="unity-webgl-logo"></div>
+    <div id="unity-fullscreen-button"></div>
+    <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
+  </div>
+</div>
+    <script src="TemplateData/ReadyPlayerMe/RpmGlobal.js"></script> <!-- Required for RPM Web Creator -->
+    <script src="TemplateData/Global.js"></script>
+    <script src="TemplateData/UnitySetup.js"></script>
+    <script src="TemplateData/ReadyPlayerMe/ReadyPlayerMeFrame.js"></script>  <!-- Required for RPM Web Creator -->
+  </body>
+</html>
 ```
 
 
 ## Links
 **Ready Player Me Unity SDK**
 - [Documentation](https://docs.readyplayer.me/ready-player-me/integration-guides/unity)
-- [Download](https://docs.readyplayer.me/ready-player-me/integration-guides/unity/unity-sdk-download)
+- [Download](https://github.com/readyplayerme/rpm-unity-sdk-core#readme)
 - [Support](https://docs.readyplayer.me/ready-player-me/integration-guides/unity/troubleshooting)
 
 **Resources** 
