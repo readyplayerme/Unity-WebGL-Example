@@ -2,8 +2,10 @@
 using System.Runtime.InteropServices;
 #endif
 
-public static class WebInterface
+namespace ReadyPlayerMe.Examples.WebGL
 {
+    public static class WebInterface
+    {
 #if !UNITY_EDITOR && UNITY_WEBGL
     [DllImport("__Internal")]
     private static extern void SetupRpm(string partner, string targetGameObjectName = "");
@@ -17,8 +19,8 @@ public static class WebInterface
     [DllImport("__Internal")]
     private static extern void ReloadUrl();
 #endif
-    public static void SetIFrameVisibility(bool isVisible)
-    {
+        public static void SetIFrameVisibility(bool isVisible)
+        {
 #if !UNITY_EDITOR && UNITY_WEBGL
         if (isVisible)
         {
@@ -28,16 +30,18 @@ public static class WebInterface
 
         HideReadyPlayerMeFrame();
 #endif
-    }
-    public static void SetupRpmFrame(string url, string targetGameObjectName)
-    {
+        }
+
+        public static void SetupRpmFrame(string url, string targetGameObjectName)
+        {
 #if !UNITY_EDITOR && UNITY_WEBGL
         SetupRpm(url,  targetGameObjectName);
 #endif
-    }
+        }
 
-    public static void ReloadUrl(string url)
-    {
-        
+        public static void ReloadUrl(string url)
+        {
+
+        }
     }
 }
