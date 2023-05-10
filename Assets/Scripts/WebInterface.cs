@@ -17,7 +17,7 @@ namespace ReadyPlayerMe.Examples.WebGL
     private static extern void HideReadyPlayerMeFrame();
     
     [DllImport("__Internal")]
-    private static extern void ReloadUrl();
+    private static extern void ReloadUrl(string url);
 #endif
         public static void SetIFrameVisibility(bool isVisible)
         {
@@ -39,9 +39,11 @@ namespace ReadyPlayerMe.Examples.WebGL
 #endif
         }
 
-        public static void ReloadUrl(string url)
+        public static void ReloadWithUrl(string url)
         {
-
+#if !UNITY_EDITOR && UNITY_WEBGL
+            ReloadUrl(url);
+#endif
         }
     }
 }

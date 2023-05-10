@@ -11,6 +11,7 @@ function setupRpmFrame(url, targetGameObjectName) {
     const frameReadyEvent = "v1.frame.ready";
     const receivingFunctionName = "FrameMessageReceived";
 
+    rpmFrame.src = "";
     rpmFrame.src = url;
     window.removeEventListener(message, subscribe);
     document.removeEventListener(message, subscribe);
@@ -35,14 +36,16 @@ function setupRpmFrame(url, targetGameObjectName) {
         
         // Subscribe to all events sent from Ready Player Me once frame is ready
         if (json.eventName === frameReadyEvent) {
-            rpmFrame.contentWindow.postMessage(
-                JSON.stringify({
-                    target: rpmFilter,
-                    type: "subscribe",
-                    eventName: "v1.**",
-                }),
-                "*"
-            );
+            if (rpmFrame.contentWindow) {
+                rpmFrame.contentWindow.postMessage(
+                    JSON.stringify({
+                        target: rpmFilter,
+                        type: "subscribe",
+                        eventName: "v1.**",
+                    }),
+                    "*"
+                );
+            }
         }
 
         // Get user id
@@ -58,11 +61,6 @@ function setupRpmFrame(url, targetGameObjectName) {
             return null;
         }
     }
-}
-
-function reloadUrl(url){
-    rpmFrame.src = url;
-    rpmFrame.reload();
 }
 
 function showRpm() {

@@ -6,23 +6,21 @@ using BodyType = ReadyPlayerMe.AvatarLoader.BodyType;
 
 namespace ReadyPlayerMe.Examples.WebGL
 {
-    public class WebAvatarLoader : MonoBehaviour
+    [RequireComponent(typeof(WebFrameHandler))]
+    public class WebGLAvatarLoader : MonoBehaviour
     {
-        private const string TAG = nameof(WebAvatarLoader);
+        private const string TAG = nameof(WebGLAvatarLoader);
         private GameObject avatar;
         private string avatarUrl = "";
-        private FrameEventHandler frameEventHandler;
+        private WebFrameHandler webFrameHandler;
+  
 
         private void Start()
         {
-            frameEventHandler = new FrameEventHandler();
-            frameEventHandler.OnAvatarExport += HandleAvatarLoaded;
-            frameEventHandler.OnUserSet += HandleUserSet;
-            frameEventHandler.OnUserAuthorized += HandleUserAuthorized;
-
-            var urlConfig = new UrlConfig();
-            urlConfig.clearCache = true;
-            WebInterface.SetupRpmFrame(urlConfig.BuildUrl(), name);
+            webFrameHandler = GetComponent<WebFrameHandler>();
+            webFrameHandler.OnAvatarExport += HandleAvatarLoaded;
+            webFrameHandler.OnUserSet += HandleUserSet;
+            webFrameHandler.OnUserAuthorized += HandleUserAuthorized;
         }
 
         private void OnAvatarLoadCompleted(object sender, CompletionEventArgs args)
@@ -39,15 +37,10 @@ namespace ReadyPlayerMe.Examples.WebGL
         {
             SDKLogger.Log(TAG, $"Avatar Load failed with error: {args.Message}");
         }
-
-        public void FrameMessageReceived(string message)
+        
+        public void HandleAvatarLoaded(string newAvatarUrl)
         {
-            frameEventHandler.MessageReceived(message);
-        }
-
-        public void HandleAvatarLoaded(string url)
-        {
-            LoadAvatarFromUrl(url);
+            LoadAvatarFromUrl(newAvatarUrl);
         }
 
         public void HandleUserSet(string userId)
@@ -59,11 +52,11 @@ namespace ReadyPlayerMe.Examples.WebGL
         {
             Debug.Log($"User authorized: {userId}");
         }
-
-        public void LoadAvatarFromUrl(string generatedUrl)
+        
+        public void LoadAvatarFromUrl(string newAvatarUrl)
         {
             var avatarLoader = new AvatarObjectLoader();
-            avatarUrl = generatedUrl;
+            avatarUrl = newAvatarUrl;
             avatarLoader.OnCompleted += OnAvatarLoadCompleted;
             avatarLoader.OnFailed += OnAvatarLoadFailed;
             avatarLoader.LoadAvatar(avatarUrl);
