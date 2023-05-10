@@ -5,15 +5,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="TemplateData/ReadyPlayerMe/RpmStyle.css"><!-- Required for RPM Web Creator -->
     <link rel="shortcut icon" href="TemplateData/favicon.ico" />
   </head>
   <body >
   <div id="unity-container" class="unity-desktop">
     <div id="canvas-wrap" >
+      <!-- rpm-container div and contents required for RPM Web Creator -->
       <div id="rpm-container">
         <iframe id="rpm-frame" class="rpm-frame" allow="camera *; microphone *"></iframe>
         <button id="rpm-hide-button" onclick="hideRpm()">Hide</button>
       </div>
+      <!-- rpm-container div and contents required for RPM Web Creator -->
       <canvas id="unity-canvas" ></canvas>
     </div>
   <div id="unity-loading-bar">
@@ -29,8 +32,9 @@
     <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
   </div>
 </div>
+    <script src="TemplateData/ReadyPlayerMe/RpmGlobal.js"></script> <!-- Required for RPM Web Creator -->
     <script src="TemplateData/Global.js"></script>
     <script src="TemplateData/UnitySetup.js"></script>
-    <script src="TemplateData/ReadyPlayerMeFrame.js"></script>
+    <script src="TemplateData/ReadyPlayerMe/ReadyPlayerMeFrame.js"></script>  <!-- Required for RPM Web Creator -->
   </body>
 </html>

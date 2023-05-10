@@ -10,7 +10,7 @@ function setupRpmFrame(url, targetGameObjectName) {
     const rpmFilter = "readyplayerme";
     const frameReadyEvent = "v1.frame.ready";
     const receivingFunctionName = "FrameMessageReceived";
-    
+
     rpmFrame.src = url;
     window.removeEventListener(message, subscribe);
     document.removeEventListener(message, subscribe);
@@ -44,6 +44,11 @@ function setupRpmFrame(url, targetGameObjectName) {
                 "*"
             );
         }
+
+        // Get user id
+        if (json.eventName === "v1.user.set") {
+            console.log(`FRAME: User with id ${json.data.id} set: ${JSON.stringify(json)}`);
+        }
     }
 
     function parse(event) {
@@ -66,4 +71,5 @@ function showRpm() {
 
 function hideRpm() {
     rpmContainer.style.display = "none";
+    rpmFrame.src = rpmFrame.src;
 }

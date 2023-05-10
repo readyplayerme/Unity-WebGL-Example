@@ -13,23 +13,23 @@
       "hash": "76f76584a113b240a4ec11f324b17302bde9a53a"
     },
     "com.readyplayerme.avatarloader": {
-      "version": "https://github.com/readyplayerme/rpm-unity-sdk-avatar-loader.git#v1.2.0",
+      "version": "https://github.com/readyplayerme/rpm-unity-sdk-avatar-loader.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
         "com.unity.nuget.newtonsoft-json": "3.0.2"
       },
-      "hash": "b0b71969ce4201e6c67885f9490f95ab0a85743f"
+      "hash": "da82799b99620eafcc3d4a3a117db2dac99d08c0"
     },
     "com.readyplayerme.core": {
-      "version": "https://github.com/readyplayerme/rpm-unity-sdk-core.git#v1.2.0",
+      "version": "https://github.com/readyplayerme/Unity-core.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2"
       },
-      "hash": "f3c93adf23972f61efa2df32bfe49e9c85d0b489"
+      "hash": "74d999479bffae9c9334fe29facd0a5b7e3c78e2"
     },
     "com.readyplayerme.webview": {
       "version": "https://github.com/readyplayerme/rpm-unity-sdk-webview.git#feature/account-linking-request",
