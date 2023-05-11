@@ -41,11 +41,6 @@ namespace ReadyPlayerMe.Examples.WebGL
         {
             WebInterface.SetupRpmFrame(urlConfig.BuildUrl(loginToken), name);
         }
-        
-        public void LoadWithLoginToken(string loginToken)
-        {
-            Setup(loginToken);
-        }
 
         /// <summary>
         /// This message is received from the RPM iFrame Javascript in the RPM WebGL Template.
