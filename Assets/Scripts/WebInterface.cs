@@ -1,12 +1,12 @@
-#if !UNITY_EDITOR && UNITY_WEBGL
+
 using System.Runtime.InteropServices;
-#endif
+
 
 namespace ReadyPlayerMe.Examples.WebGL
 {
     public static class WebInterface
     {
-#if !UNITY_EDITOR && UNITY_WEBGL
+
     [DllImport("__Internal")]
     private static extern void SetupRpm(string partner, string targetGameObjectName = "");
     
@@ -18,32 +18,28 @@ namespace ReadyPlayerMe.Examples.WebGL
     
     [DllImport("__Internal")]
     private static extern void ReloadUrl(string url);
-#endif
-        public static void SetIFrameVisibility(bool isVisible)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
+
+    public static void SetIFrameVisibility(bool isVisible)
+    {
         if (isVisible)
         {
             ShowReadyPlayerMeFrame();
             return;
         }
-
         HideReadyPlayerMeFrame();
-#endif
-        }
 
-        public static void SetupRpmFrame(string url, string targetGameObjectName)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-        SetupRpm(url,  targetGameObjectName);
-#endif
-        }
+    }
 
-        public static void ReloadWithUrl(string url)
-        {
+    public static void SetupRpmFrame(string url, string targetGameObjectName)
+    {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            ReloadUrl(url);
+    SetupRpm(url,  targetGameObjectName);
 #endif
-        }
+    }
+
+    public static void ReloadWithUrl(string url)
+    {
+        ReloadUrl(url);
+    }
     }
 }
