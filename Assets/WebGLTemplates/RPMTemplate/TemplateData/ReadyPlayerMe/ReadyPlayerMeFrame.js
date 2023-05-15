@@ -5,55 +5,52 @@ rpmHideButton.onclick = function () {
     rpmContainer.style.display = "none";
 };
 
+function setupRpmFrame(url, targetGameObjectName) {
+    const message = "message";
+    const rpmFilter = "readyplayerme";
+    const frameReadyEvent = "v1.frame.ready";
+    const receivingFunctionName = "FrameMessageReceived";
 
-function setupRpmFrame(subdomain) {
-    rpmFrame.src = `https://${subdomain != "" ? subdomain : "demo"}.readyplayer.me/avatar?frameApi`;
-
-    window.addEventListener("message", subscribe);
-    document.addEventListener("message", subscribe);
+    rpmFrame.src = "";
+    rpmFrame.src = url;
+    window.removeEventListener(message, subscribe);
+    document.removeEventListener(message, subscribe);
+    window.addEventListener(message, subscribe);
+    document.addEventListener(message, subscribe);
+    
     function subscribe(event) {
         const json = parse(event);
         if (
             unityGame == null ||
-            json?.source !== "readyplayerme" ||
+            json?.source !== rpmFilter ||
             json?.eventName == null
         ) {
             return;
         }
-        // Send web event names to Unity can be useful for debugging. Can safely be removed
+
         unityGame.SendMessage(
-            "DebugPanel",
-            "LogMessage",
-            `Event: ${json.eventName}`
+            targetGameObjectName,
+            receivingFunctionName,
+            event.data
         );
-
+        
         // Subscribe to all events sent from Ready Player Me once frame is ready
-        if (json.eventName === "v1.frame.ready") {
-            rpmFrame.contentWindow.postMessage(
-                JSON.stringify({
-                    target: "readyplayerme",
-                    type: "subscribe",
-                    eventName: "v1.**",
-                }),
-                "*"
-            );
-        }
-
-        // Get avatar GLB URL
-        if (json.eventName === "v1.avatar.exported") {
-            hideRpm();
-            // Send message to a Gameobject in the current scene
-            unityGame.SendMessage(
-                "WebAvatarLoader", // Target GameObject name
-                "OnWebViewAvatarGenerated", // Name of function to run
-                json.data.url
-            );
-            console.log(`Avatar URL: ${json.data.url}`);
+        if (json.eventName === frameReadyEvent) {
+            if (rpmFrame.contentWindow) {
+                rpmFrame.contentWindow.postMessage(
+                    JSON.stringify({
+                        target: rpmFilter,
+                        type: "subscribe",
+                        eventName: "v1.**",
+                    }),
+                    "*"
+                );
+            }
         }
 
         // Get user id
         if (json.eventName === "v1.user.set") {
-            console.log(`User with id ${json.data.id} set: ${JSON.stringify(json)}`);
+            console.log(`FRAME: User with id ${json.data.id} set: ${JSON.stringify(json)}`);
         }
     }
 
