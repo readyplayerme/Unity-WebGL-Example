@@ -52,16 +52,16 @@ namespace ReadyPlayerMe.Examples.WebGL
             var webMessage = JsonConvert.DeserializeObject<WebMessage>(message);
             switch (webMessage.eventName)
             {
-                case WebViewEventNames.AVATAR_EXPORT:
+                case WebViewEvents.AVATAR_EXPORT:
                     Debug.Log(webMessage.eventName);
                     OnAvatarExport?.Invoke(webMessage.GetAvatarUrl());
                     WebInterface.SetIFrameVisibility(false);
                     break;
-                case WebViewEventNames.USER_SET:
+                case WebViewEvents.USER_SET:
                     Debug.Log(webMessage.eventName);
                     OnUserSet?.Invoke(webMessage.GetUserId());
                     break;
-                case WebViewEventNames.USER_AUTHORIZED:
+                case WebViewEvents.USER_AUTHORIZED:
                     Debug.Log(webMessage.eventName);
                     OnUserAuthorized?.Invoke(webMessage.GetUserId());
                     break;
