@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class DemoCanvas : MonoBehaviour
+namespace ReadyPlayerMe.Examples.WebGL
 {
-    [SerializeField] private Button createAvatarButton;
-
-    private void Start()
+    public class DemoCanvas : MonoBehaviour
     {
-        if (createAvatarButton != null)
+        [SerializeField] private Button createAvatarButton;
+
+        private void Start()
         {
-            createAvatarButton.onClick.AddListener(OnCreateAvatar);
+            if (createAvatarButton != null)
+            {
+                createAvatarButton.onClick.AddListener(OnCreateAvatar);
+            }
         }
-    }
 
-    public void OnCreateAvatar()
-    {
+        public void OnCreateAvatar()
+        {
 #if !UNITY_EDITOR && UNITY_WEBGL
         WebInterface.SetIFrameVisibility(true);
 #endif
+        }
     }
 }
