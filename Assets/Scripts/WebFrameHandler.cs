@@ -17,6 +17,7 @@ namespace ReadyPlayerMe.Examples.WebGL
         public Action<string> OnAvatarExport;
         public Action<string> OnUserSet;
         public Action<string> OnUserAuthorized;
+        public Action<AssetRecord> OnAssetUnlock;
         
         [SerializeField] private AutoInitialize autoInitialize = AutoInitialize.OnStart;
         [SerializeField] private UrlConfig urlConfig;
@@ -36,7 +37,7 @@ namespace ReadyPlayerMe.Examples.WebGL
                 Setup();
             }
         }
-
+        
         public void Setup(string loginToken = "")
         {
             WebInterface.SetupRpmFrame(urlConfig.BuildUrl(loginToken), name);
@@ -64,6 +65,9 @@ namespace ReadyPlayerMe.Examples.WebGL
                 case WebViewEvents.USER_AUTHORIZED:
                     Debug.Log(webMessage.eventName);
                     OnUserAuthorized?.Invoke(webMessage.GetUserId());
+                    break;
+                case WebViewEvents.ASSET_UNLOCK:
+                    OnAssetUnlock?.Invoke(webMessage.GetAssetRecord());
                     break;
             }
         }
