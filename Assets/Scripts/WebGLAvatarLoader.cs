@@ -1,8 +1,6 @@
-using ReadyPlayerMe.AvatarLoader;
 using ReadyPlayerMe.Core;
-using ReadyPlayerMe.WebView;
 using UnityEngine;
-using BodyType = ReadyPlayerMe.AvatarLoader.BodyType;
+using BodyType = ReadyPlayerMe.Core.BodyType;
 
 namespace ReadyPlayerMe.Examples.WebGL
 {
