@@ -671,8 +671,9 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    7: READY_PLAYER_ME
-    13: READY_PLAYER_ME
+    1: READY_PLAYER_ME;GLTFAST
+    7: READY_PLAYER_ME;GLTFAST
+    13: READY_PLAYER_ME;GLTFAST
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
