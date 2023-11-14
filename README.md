@@ -2,6 +2,7 @@
 
 **Notice: This repository is now deprecated and no longer actively maintained.
 **
+
 **The WebGL Example and all logic has been moved into our Ready Player Me Core package as a sample that can be imported from the inspector https://github.com/readyplayerme/rpm-unity-sdk-core/tree/main/Samples~/WebGLSample.
 **
 
