@@ -1,4 +1,9 @@
-# Ready Player Me Unity WebGL Integration Example
+# Ready Player Me Unity WebGL Integration Example DEPRECATED 
+
+**Notice: This repository is now deprecated and no longer actively maintained.
+**
+**The WebGL Example and all logic has been moved into our Ready Player Me Core package as a sample that can be imported from the inspector https://github.com/readyplayerme/rpm-unity-sdk-core/tree/main/Samples~/WebGLSample.
+**
 
 This repository contains a Unity project that uses a custom WebGL template to embed the Ready Player Me character creator inside an application to seamlessly add avatars. This project can be used as a reference for anybody wanting to add Ready Player Me Avatars into their Unity WebGL application.
 
